@@ -1,17 +1,19 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import Navigation from './components/Navigation.vue';
+export default {
+  name: 'App',
+  components: {
+    Navigation
+  }
+}
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <div class="app-wrapper">
+    <div class="app">
+      <Navigation/>
+    </div>
+  </div> 
 </template>
 
 <style lang="scss">
