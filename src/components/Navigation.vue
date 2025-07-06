@@ -3,7 +3,7 @@
     <nav class="container">
       <div class="branding">
         <RouterLink :to="{ name: 'Home' }" class="header">
-          FireBlogs
+          VeNtura Blogs
         </RouterLink>
       </div>
       <div class="nav-links" v-if="isPCView">
