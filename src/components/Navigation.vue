@@ -10,7 +10,7 @@
         <ul>
           <RouterLink class="link" to="#">Home</RouterLink>
           <RouterLink class="link" to="#">Blogs</RouterLink>
-          <RouterLink class="link" to="#">Create Blogs</RouterLink>
+          <!-- <RouterLink class="link" to="#">Create Blogs</RouterLink> -->
           <RouterLink class="link" to="#">Login/Register</RouterLink>
         </ul>
       </div>
@@ -24,7 +24,7 @@
       <ul class="mobile-nav">
         <RouterLink class="link" to="#">Home</RouterLink>
         <RouterLink class="link" to="#">Blogs</RouterLink>
-        <RouterLink class="link" to="#">Create Blogs</RouterLink>
+        <!-- <RouterLink class="link" to="#">Create Blogs</RouterLink> -->
         <RouterLink class="link" to="#">Login/Register</RouterLink>
       </ul>
     </Transition>

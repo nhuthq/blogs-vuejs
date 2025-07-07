@@ -1,11 +1,12 @@
 <script>
-import Navigation from './components/Navigation.vue';
 import Footer from './components/Footer.vue';
+import Navigation from './components/Navigation.vue';
+
 export default {
   name: 'App',
   components: {
-    Navigation,
     Footer,
+    Navigation,
   },
 };
 </script>
@@ -14,6 +15,7 @@ export default {
   <div class="app-wrapper">
     <div class="app">
       <Navigation />
+      <RouterView />
       <Footer />
     </div>
   </div>
@@ -56,12 +58,12 @@ export default {
   margin-left: 8px;
   width: 12px;
   path {
-    fill: #000;
+    fill: black;
   }
 }
 .arrow-light {
   path {
-    fill: #fff;
+    fill: white;
   }
 }
 
