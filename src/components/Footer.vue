@@ -1,7 +1,7 @@
 <template>
   <footer>
     <div class="container">
-      <div class="leftContainer">
+      <div class="left-container">
         <div class="socials">
           <RouterLink class="branding" :to="'/'">VeNtura Blogs</RouterLink>
           <ul>
@@ -40,7 +40,7 @@
           </ul>
         </div>
       </div>
-      <div class="rightContainer">
+      <div class="right-container">
         <p>VeNtura Blogs Copyright 2025 All Rights Reserved</p>
       </div>
     </div>
@@ -80,7 +80,7 @@ footer {
       gap: 0;
     }
 
-    .leftContainer {
+    .left-container {
       color: white;
       display: flex;
       align-items: center;
@@ -158,7 +158,7 @@ footer {
       }
     }
 
-    .rightContainer {
+    .right-container {
       color: white;
       display: flex;
       align-items: center;
