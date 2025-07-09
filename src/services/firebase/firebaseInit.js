@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
 import {
   getFirestore,
   doc,
@@ -10,31 +10,32 @@ import {
   deleteDoc,
   updateDoc,
   collection,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 import {
   ref,
   getStorage,
   uploadBytes,
   deleteObject,
   getDownloadURL,
-} from "firebase/storage";
+} from 'firebase/storage';
 import {
   getAuth,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} from "firebase/auth";
+} from 'firebase/auth';
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDQ8LHDlfeRo0JLoZYRv7hiEaJ2taAkufQ",
-  authDomain: "fire-blog-vuejs.firebaseapp.com",
-  projectId: "fire-blog-vuejs",
-  storageBucket: "fire-blog-vuejs.appspot.com",
-  messagingSenderId: "164455781445",
-  appId: "1:164455781445:web:519327390e31b5e0867f2c",
-  measurementId: "G-FB4RRYQWZ7"
+  apiKey: 'AIzaSyB8V-tXVKUdynuD1aHl3c_ehpsyXoCqbrE',
+  authDomain: 'ventura-blogs-vue.firebaseapp.com',
+  projectId: 'ventura-blogs-vue',
+  storageBucket: 'ventura-blogs-vue.firebasestorage.app',
+  messagingSenderId: '303008489970',
+  appId: '1:303008489970:web:56e0118b023f8b53034b6b',
 };
 
 // Initialize Firebase
@@ -53,10 +54,9 @@ const firebaseAuth = getAuth();
 const firebaseStorage = getStorage(firebaseApp);
 
 export {
-    firebaseApp,
-    firestoreDB,
-    firebaseAuth,
-    firebaseStorage,
-    firebaseAnalytics,
-  };
-  
+  firebaseApp,
+  firestoreDB,
+  firebaseAuth,
+  firebaseStorage,
+  firebaseAnalytics,
+};
