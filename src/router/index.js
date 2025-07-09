@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router';
 import Home from '../views/Home.vue';
 import Blogs from '@/views/Blogs.vue';
+import Login from '@/views/Login.vue';
 
 // Khai báo route
 const routes = [
@@ -13,6 +14,11 @@ const routes = [
     path: '/blogs',
     name: 'Blogs',
     component: Blogs,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
   },
 ];
 

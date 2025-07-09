@@ -43,6 +43,11 @@ import imgCoding from '@/assets/thumbnail/coding.jpg';
 import imgCodingNight from '@/assets/thumbnail/codingnight.jpg';
 import imgPhotographer from '@/assets/thumbnail/photographer.jpg';
 
+import imgDaNang from '@/assets/thumbnail/danang.jpg';
+import imgNhaTrang from '@/assets/thumbnail/nhatrang.jpg';
+import imgHoiAN from '@/assets/thumbnail/hoian.jpg';
+import imgPhuQuoc from '@/assets/thumbnail/phuquoc.jpg';
+
 export default {
   name: 'BlogCard',
   components: {
@@ -71,6 +76,10 @@ export default {
         { name: 'coffee', value: imgCoffee },
         { name: 'codingnight', value: imgCodingNight },
         { name: 'photographer', value: imgPhotographer },
+        { name: 'danang', value: imgDaNang },
+        { name: 'nhatrang', value: imgNhaTrang },
+        { name: 'hoian', value: imgHoiAN },
+        { name: 'phuquoc', value: imgPhuQuoc },
       ];
       const found = mockImages.find((img) => img.name === imageName);
       return found ? found.value : imgCoding; // default fallback

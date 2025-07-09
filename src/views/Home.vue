@@ -12,7 +12,7 @@
         <div class="blog-cards-grid">
           <BlogCard
             :blogPost="item"
-            v-for="(item, index) in samplePosts"
+            v-for="(item, index) in samplePostCards"
             :key="index"
           />
         </div>
@@ -32,7 +32,6 @@
 <script>
 import BlogPost from '@/components/BlogPost.vue';
 import BlogCard from '@/components/BlogCard.vue';
-
 import IcArrow from '@/assets/Icons/arrow-right-light.svg';
 
 export default {
@@ -62,41 +61,12 @@ export default {
           age: 30,
         },
       },
-      samplePosts: [
-        {
-          id: '2',
-          title: 'Sample Post 1',
-          content: 'Sample content 1',
-          coverPhoto: 'codingnight',
-          coverPhotoName: 'codingnight',
-          isPublished: true,
-          createdDate: '2025-07-04',
-          lastEditedDate: '2025-07-04',
-          author: {
-            id: '1',
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            age: 30,
-          },
-        },
-        {
-          id: '3',
-          title: 'Sample Post 2',
-          content: 'Sample content 2',
-          coverPhoto: 'photographer',
-          coverPhotoName: 'photographer',
-          isPublished: true,
-          createdDate: '2025-07-04',
-          lastEditedDate: '2025-07-04',
-          author: {
-            id: '1',
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            age: 30,
-          },
-        },
-      ],
     };
+  },
+  computed: {
+    samplePostCards() {
+      return this.$store.state.samplePostCards;
+    },
   },
 };
 </script>

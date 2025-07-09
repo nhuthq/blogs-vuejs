@@ -1,9 +1,13 @@
 <template>
-  <div class="blog-cards-container">
-    <div class="blog-cards-grid container">
+  <div class="blog-cards-container container">
+    <div class="toggle-edit">
+      <span>Toggle Editing Mode</span>
+      <input type="checkbox" />
+    </div>
+    <div class="blog-cards-grid">
       <BlogCard
         :blogPost="item"
-        v-for="(item, index) in samplePosts"
+        v-for="(item, index) in samplePostCards"
         :key="index"
       />
     </div>
@@ -12,49 +16,27 @@
 
 <script lang="ts">
 import BlogCard from '@/components/BlogCard.vue';
+import { useStore } from 'vuex';
+import { computed } from 'vue';
+
 export default {
   name: 'Blogs',
   components: {
     BlogCard,
   },
-  data() {
+  setup() {
+    const store = useStore();
+
+    const editMode = computed({
+      get: () => store.state.editPost,
+      set: (payload: any) => store.commit('toggleEditPost', payload),
+    });
+
+    const samplePostCards = computed(() => store.state.samplePostCards);
+
     return {
-      samplePosts: [
-        {
-          id: '2',
-          title: 'Sample Post 1',
-          content: 'Sample content 1',
-          coverPhoto: 'codingnight',
-          coverPhotoName: 'codingnight',
-          isPublished: true,
-          welcomeScreen: false,
-          createdDate: '2025-07-04',
-          lastEditedDate: '2025-07-04',
-          author: {
-            id: '1',
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            age: 30,
-          },
-        },
-        {
-          id: '3',
-          title: 'Sample Post 2',
-          content: 'Sample content 2',
-          coverPhoto: 'photographer',
-          coverPhotoName: 'photographer',
-          isPublished: true,
-          welcomeScreen: false,
-          createdDate: '2025-07-04',
-          lastEditedDate: '2025-07-04',
-          author: {
-            id: '1',
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            age: 30,
-          },
-        },
-      ],
+      editMode,
+      samplePostCards,
     };
   },
 };
@@ -62,7 +44,8 @@ export default {
 
 <style lang="scss" scoped>
 .blog-cards-container {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   padding: 80px 16px;
   background-color: #f1f1f1;
   @media (min-width: 500px) {
@@ -73,6 +56,7 @@ export default {
     display: grid;
     gap: 32px;
     grid-template-columns: 1fr;
+    margin-top: 70px;
 
     @media (min-width: 500px) {
       grid-template-columns: repeat(2, 1fr);
@@ -86,22 +70,24 @@ export default {
   }
 
   .toggle-edit {
+    position: relative;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    position: absolute;
-    top: 0;
-    right: 0;
+    align-self: flex-end;
+    justify-content: center;
 
     span {
       margin-right: 16px;
     }
 
     input[type='checkbox'] {
-      cursor: pointer;
       position: relative;
+      border: none;
+      appearance: none;
       background-color: white;
       outline: none;
-      width: 80px;
+      width: 60px;
       height: 30px;
       border-radius: 20px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -116,7 +102,7 @@ export default {
       border-radius: 20px;
       top: 0;
       left: 0;
-      background: #303030;
+      background: rgb(100, 92, 92);
       transform: scale(1.1);
       transition: 500ms ease all;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -124,8 +110,8 @@ export default {
     }
 
     input:checked[type='checkbox']:before {
-      background: rgb(100, 92, 92);
-      left: 52px;
+      background: #303030;
+      left: 30px;
     }
   }
 }
