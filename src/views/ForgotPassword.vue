@@ -1,25 +1,21 @@
 <template>
-  <div class="login-container">
-    <form class="login-form">
-      <h2>Welcome Back</h2>
+  <div class="forgot-password-container">
+    <form class="forgot-password-form">
+      <h2>Let’s Get You In</h2>
+      <p>Forgot your password? Enter your email to reset it</p>
       <div class="inputs-container">
         <div class="input">
           <input type="text" placeholder="Email" v-model="email" />
           <Email class="icon" />
         </div>
-        <div class="input">
-          <input type="password" placeholder="Password" v-model="password" />
-          <Password class="icon" />
-        </div>
+        <div v-show="error" class="error">{{ errorMessage }}</div>
       </div>
-      <RouterLink to="/forgot-password" class="forgot-password-link"
-        >Forgot Password?</RouterLink
-      >
-      <div v-show="error" class="error">{{ errorMessage }}</div>
-      <button @click.prevent="handleLogin">Login</button>
-      <p class="register-link">
-        Don't have an account?
-        <RouterLink to="/register" class="router-link">Register</RouterLink>
+      <button @click.prevent="handleRegister">Submit</button>
+      <p class="login-link">
+        Back to
+        <RouterLink class="router-link" :to="{ name: 'Login' }"
+          >Login</RouterLink
+        >
       </p>
       <div class="angle"></div>
     </form>
@@ -29,35 +25,31 @@
 
 <script lang="ts">
 import { RouterLink } from 'vue-router';
-
 import Email from '@/assets/Icons/envelope-regular.svg';
-import Password from '@/assets/Icons/lock-alt-solid.svg';
 
 export default {
-  name: 'Login',
+  name: 'ForgotPassword',
   components: {
     Email,
-    Password,
     RouterLink,
   },
   data() {
     return {
       email: '',
-      password: '',
       error: false,
       errorMessage: '',
     };
   },
   methods: {
-    handleLogin() {
-      console.log('handleLogin');
+    handleRegister() {
+      console.log('handleReset');
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.login-container {
+.forgot-password-container {
   overflow: hidden;
   display: flex;
   height: 100vh;
@@ -70,7 +62,7 @@ export default {
     width: 100%;
   }
 
-  .login-form {
+  .forgot-password-form {
     flex: 1;
     height: 100%;
     padding: 100px 25px;
@@ -107,6 +99,7 @@ export default {
     .inputs-container {
       width: 100%;
       max-width: 350px;
+      margin-top: 32px;
       .input {
         position: relative;
         display: flex;
@@ -133,7 +126,7 @@ export default {
       }
     }
 
-    .register-link {
+    .login-link {
       font-size: 14px;
       margin: 12px 0;
       color: #000;
@@ -145,20 +138,6 @@ export default {
         &:hover {
           border-color: #303030;
         }
-      }
-    }
-
-    .forgot-password-link {
-      cursor: pointer;
-      text-decoration: none;
-      color: #000;
-      font-size: 14px;
-      margin: 12px 0;
-      border-bottom: 1px solid transparent;
-      transition: 0.5s ease all;
-
-      &:hover {
-        border-color: #303030;
       }
     }
 

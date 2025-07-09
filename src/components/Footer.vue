@@ -25,7 +25,9 @@
               <RouterLink :to="{ name: 'Home' }" class="link">Home</RouterLink>
             </li>
             <li>
-              <RouterLink :to="{ name: 'Home' }" class="link">Blogs</RouterLink>
+              <RouterLink :to="{ name: 'Blogs' }" class="link"
+                >Blogs</RouterLink
+              >
             </li>
             <li>
               <RouterLink :to="{ name: '' }" class="link"
@@ -33,8 +35,8 @@
               >
             </li>
             <li>
-              <RouterLink :to="{ name: '' }" class="link"
-                >Login/Register</RouterLink
+              <RouterLink :to="{ name: 'Login' }" class="link"
+                >Login</RouterLink
               >
             </li>
           </ul>
