@@ -123,6 +123,8 @@ export default {
               lastName: this.lastName,
               userName: this.userName,
               email: this.email,
+              isAdmin: false,
+              createdAt: new Date(),
             };
 
             const docRef = doc(firestoreDB, 'users', userID);

@@ -2,11 +2,21 @@
 import Footer from './components/Footer.vue';
 import Navigation from './components/Navigation.vue';
 
+import { firebaseAuth } from '@/services/firebase/firebaseInit.js';
+
 export default {
   name: 'App',
   components: {
     Footer,
     Navigation,
+  },
+  created() {
+    firebaseAuth.onAuthStateChanged((currentUser) => {
+      this.$store.commit('updateUser', currentUser);
+      if (currentUser) {
+        this.$store.dispatch('getCurrentUser');
+      }
+    });
   },
 };
 </script>

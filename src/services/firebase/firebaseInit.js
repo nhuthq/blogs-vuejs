@@ -53,6 +53,11 @@ const firebaseStorage = getStorage(firebaseApp);
 export {
   doc,
   setDoc,
+  getDoc,
+  getDocs,
+  deleteDoc,
+  updateDoc,
+  collection,
   firebaseApp,
   firestoreDB,
   firebaseAuth,

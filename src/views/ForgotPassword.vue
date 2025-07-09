@@ -82,7 +82,6 @@ export default {
           this.loading = false;
           this.modalActive = true;
           this.modalMessage = `A reset link have been sent to this mail: ${this.email}`;
-          console.log('Response: ', JSON.stringify(response, null, 2));
         })
         .catch((error) => {
           switch (error.code) {

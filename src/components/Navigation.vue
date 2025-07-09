@@ -1,5 +1,5 @@
 <template>
-  <Header>
+  <header>
     <nav class="container">
       <div class="branding">
         <RouterLink :to="{ name: 'Home' }" class="header">
@@ -8,11 +8,24 @@
       </div>
       <div class="nav-links" v-if="isPCView">
         <ul>
-          <RouterLink class="link" to="#">Home</RouterLink>
+          <RouterLink class="link" to="/">Home</RouterLink>
           <RouterLink class="link" to="/blogs">Blogs</RouterLink>
-          <!-- <RouterLink class="link" to="#">Create Blogs</RouterLink> -->
-          <RouterLink class="link" to="/login">Login</RouterLink>
+          <RouterLink v-show="isAdmin" class="link" to="#"
+            >Create Blogs</RouterLink
+          >
+          <RouterLink v-show="!user" class="link" to="/login">Login</RouterLink>
         </ul>
+        <div
+          v-show="user"
+          class="profile-button"
+          @click="toggleProfileMenu"
+          ref="profile"
+        >
+          <span>{{ this.$store.state.profileInitials }}</span>
+          <div v-show="toggleProfile">
+            <ProfilePanel />
+          </div>
+        </div>
       </div>
     </nav>
     <MenuIcon @click="toggleSPNav" class="menu-icon" v-if="isSPView" />
@@ -22,22 +35,27 @@
       v-show="isOpenSPNav"
     >
       <ul class="mobile-nav">
-        <RouterLink class="link" to="#">Home</RouterLink>
+        <RouterLink class="link" to="/">Home</RouterLink>
         <RouterLink class="link" to="/blogs">Blogs</RouterLink>
-        <!-- <RouterLink class="link" to="#">Create Blogs</RouterLink> -->
-        <RouterLink class="link" to="/logins">Login</RouterLink>
+        <RouterLink v-show="isAdmin" class="link" to="#"
+          >Create Blogs</RouterLink
+        >
+        <RouterLink v-show="!user" class="link" to="/login">Login</RouterLink>
       </ul>
     </Transition>
-  </Header>
+  </header>
 </template>
 
 <script>
-import MenuIcon from '../assets/Icons/bars-regular.svg';
+import ProfilePanel from './ProfilePanel.vue';
+import MenuIcon from '@/assets/Icons/bars-regular.svg';
+
 import { getDeviceViewSmart } from '../helpers/deviceView';
 export default {
   name: 'Navigation',
   components: {
     MenuIcon,
+    ProfilePanel,
   },
   data() {
     return {
@@ -46,6 +64,7 @@ export default {
         windowWidth: null,
       },
       isOpenSPNav: false,
+      toggleProfile: false,
     };
   },
   computed: {
@@ -57,6 +76,12 @@ export default {
     },
     isAppView() {
       return this.device.type === 'AppView';
+    },
+    user() {
+      return this.$store.state.user;
+    },
+    isAdmin() {
+      return this.$store.state.profileAdmin;
     },
   },
   created() {
@@ -79,6 +104,11 @@ export default {
     },
     toggleSPNav() {
       this.isOpenSPNav = !this.isOpenSPNav;
+    },
+    toggleProfileMenu(e) {
+      if (e.target === this.$refs.profile) {
+        this.toggleProfile = !this.toggleProfile;
+      }
     },
   },
 };
@@ -135,6 +165,23 @@ header {
 
         .link:last-child {
           margin-right: 0;
+        }
+      }
+
+      .profile-button {
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: white;
+        background-color: #303030;
+
+        span {
+          pointer-events: none;
         }
       }
     }
