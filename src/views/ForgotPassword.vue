@@ -1,5 +1,11 @@
 <template>
   <div class="forgot-password-container">
+    <Loading v-if="loading" />
+    <Modal
+      v-if="modalActive"
+      v-on:close-modal="closeModal"
+      :modalMessage="modalMessage"
+    />
     <form class="forgot-password-form">
       <h2>Let’s Get You In</h2>
       <p>Forgot your password? Enter your email to reset it</p>
@@ -23,26 +29,82 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
+import {
+  firebaseAuth,
+  sendPasswordResetEmail,
+  // @ts-ignore
+} from '@/services/firebase/firebaseInit';
 import { RouterLink } from 'vue-router';
+// @ts-ignore
+import { isValidEmail } from '@/helpers/utility';
+
+import Modal from '@/components/Modal.vue';
+import Loading from '@/components/Loading.vue';
 import Email from '@/assets/Icons/envelope-regular.svg';
 
 export default {
   name: 'ForgotPassword',
   components: {
     Email,
+    Modal,
+    Loading,
     RouterLink,
   },
   data() {
     return {
-      email: '',
       error: false,
+      loading: false,
+      modalActive: false,
+      email: '',
+      modalMessage: '',
       errorMessage: '',
     };
   },
   methods: {
-    handleRegister() {
-      console.log('handleReset');
+    async handleRegister() {
+      if (this.email === '') {
+        this.error = true;
+        this.errorMessage = 'Please fill out all the fields';
+        return;
+      }
+
+      if (!isValidEmail(this.email)) {
+        this.error = true;
+        this.errorMessage = 'Please enter a valid email address';
+        return;
+      }
+
+      this.error = false;
+      this.loading = true;
+      await sendPasswordResetEmail(firebaseAuth, this.email)
+        .then(() => {
+          this.loading = false;
+          this.modalActive = true;
+          this.modalMessage = `A reset link have been sent to this mail: ${this.email}`;
+        })
+        .catch((error) => {
+          switch (error.code) {
+            case 'auth/invalid-email':
+              this.errorMessage = 'Invalid email';
+              break;
+            case 'auth/user-not-found':
+              this.errorMessage = 'No account with that email was found';
+              break;
+            default:
+              this.errorMessage = `${error}`;
+              console.log('Erorr: ', error);
+              break;
+          }
+          this.error = true;
+          this.loading = false;
+          this.modalActive = false;
+        });
+    },
+    closeModal() {
+      this.email = '';
+      this.modalActive = !this.modalActive;
+      this.$router.push({ name: 'Login' });
     },
   },
 };

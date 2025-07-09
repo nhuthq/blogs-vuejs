@@ -26,9 +26,6 @@ import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
 const firebaseConfig = {
   apiKey: 'AIzaSyB8V-tXVKUdynuD1aHl3c_ehpsyXoCqbrE',
   authDomain: 'ventura-blogs-vue.firebaseapp.com',
@@ -54,9 +51,14 @@ const firebaseAuth = getAuth();
 const firebaseStorage = getStorage(firebaseApp);
 
 export {
+  doc,
+  setDoc,
   firebaseApp,
   firestoreDB,
   firebaseAuth,
   firebaseStorage,
   firebaseAnalytics,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 };
