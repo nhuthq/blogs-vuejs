@@ -30,7 +30,7 @@
               >
             </li>
             <li>
-              <RouterLink :to="{ name: '' }" class="link"
+              <RouterLink :to="{ name: 'CreateBlog' }" class="link"
                 >Create Blogs</RouterLink
               >
             </li>

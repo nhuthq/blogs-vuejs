@@ -8,12 +8,14 @@
       </div>
       <div class="nav-links" v-if="isPCView">
         <ul>
-          <RouterLink class="link" to="/">Home</RouterLink>
-          <RouterLink class="link" to="/blogs">Blogs</RouterLink>
-          <RouterLink v-show="isAdmin" class="link" to="#"
+          <RouterLink class="link" :to="{ name: 'Home' }">Home</RouterLink>
+          <RouterLink class="link" :to="{ name: 'Blogs' }">Blogs</RouterLink>
+          <RouterLink v-show="isAdmin" class="link" :to="{ name: 'CreateBlog' }"
             >Create Blogs</RouterLink
           >
-          <RouterLink v-show="!user" class="link" to="/login">Login</RouterLink>
+          <RouterLink v-show="!user" class="link" :to="{ name: 'Login' }"
+            >Login</RouterLink
+          >
         </ul>
         <div
           v-show="user"
@@ -35,12 +37,14 @@
       v-show="isOpenSPNav"
     >
       <ul class="mobile-nav">
-        <RouterLink class="link" to="/">Home</RouterLink>
-        <RouterLink class="link" to="/blogs">Blogs</RouterLink>
-        <RouterLink v-show="isAdmin" class="link" to="#"
+        <RouterLink class="link" :to="{ name: 'Home' }">Home</RouterLink>
+        <RouterLink class="link" :to="{ name: 'Blogs' }">Blogs</RouterLink>
+        <RouterLink v-show="isAdmin" class="link" :to="{ name: 'CreateBlog' }"
           >Create Blogs</RouterLink
         >
-        <RouterLink v-show="!user" class="link" to="/login">Login</RouterLink>
+        <RouterLink v-show="!user" class="link" :to="{ name: 'Login' }"
+          >Login</RouterLink
+        >
       </ul>
     </Transition>
   </header>
