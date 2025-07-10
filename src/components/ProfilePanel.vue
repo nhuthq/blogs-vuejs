@@ -38,6 +38,8 @@
 
 <script>
 import { RouterLink } from 'vue-router';
+import { firebaseAuth } from '@/services/firebase/firebaseInit';
+
 import UserIcon from '@/assets/Icons/user-alt-light.svg';
 import AdminIcon from '@/assets/Icons/user-crown-light.svg';
 import SignOutIcon from '@/assets/Icons/sign-out-alt-regular.svg';
