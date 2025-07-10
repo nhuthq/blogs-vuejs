@@ -51,6 +51,7 @@ const firebaseAuth = getAuth();
 const firebaseStorage = getStorage(firebaseApp);
 
 export {
+  ref,
   doc,
   setDoc,
   getDoc,
@@ -58,11 +59,13 @@ export {
   deleteDoc,
   updateDoc,
   collection,
+  uploadBytes,
   firebaseApp,
   firestoreDB,
   firebaseAuth,
   firebaseStorage,
   firebaseAnalytics,
+  getDownloadURL,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,

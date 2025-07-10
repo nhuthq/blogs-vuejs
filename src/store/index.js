@@ -122,8 +122,8 @@ export const store = createStore({
     blogTitle: '',
     blogHTMLContent: '',
     blogCoverPhotoName: '',
-    blogPhotoFileURL: null,
     blogPhotoPreview: false,
+    blogCoverPhotoURL: null,
   },
   mutations: {
     toggleEditPost(state, payload) {
@@ -163,11 +163,14 @@ export const store = createStore({
     updateBlogHTMLContent(state, payload) {
       state.blogHTMLContent = payload;
     },
-    updateBlogPhotoFileURL(state, payload) {
-      state.blogPhotoFileURL = payload;
+    updateBlogCoverPhotoURL(state, payload) {
+      state.blogCoverPhotoURL = payload;
     },
     updateBlogCoverPhotoName(state, payload) {
       state.blogCoverPhotoName = payload;
+    },
+    updateBlogPhotoPreview(state, payload) {
+      state.blogPhotoPreview = payload;
     },
   },
   actions: {

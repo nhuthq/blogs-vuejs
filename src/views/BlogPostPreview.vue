@@ -1,6 +1,6 @@
 <template>
   <div class="preview-container">
-    <div class="quill-container container">
+    <div class="container">
       <h2>{{ this.title }}</h2>
       <img :src="this.coverPhoto" alt="Cover Photo" />
       <div class="ql-editor" v-html="htmlContent"></div>
@@ -12,9 +12,15 @@
 export default {
   name: 'BlogPostPreview',
   computed: {
-    title: {},
-    coverPhoto: {},
-    htmlContent: {},
+    title() {
+      return this.$store.state.blogTitle;
+    },
+    coverPhoto() {
+      return this.$store.state.blogCoverPhotoURL;
+    },
+    htmlContent() {
+      return this.$store.state.blogHTMLContent;
+    },
   },
 };
 </script>
