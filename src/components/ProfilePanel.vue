@@ -15,7 +15,7 @@
     </div>
     <div class="options">
       <div class="option">
-        <RouterLink class="option" :to="{ name: '' }">
+        <RouterLink class="option" :to="{ name: 'Profile' }">
           <UserIcon class="icon" />
           <p>Profile</p>
         </RouterLink>
@@ -27,7 +27,7 @@
         </RouterLink>
       </div>
       <div class="option">
-        <RouterLink @click="signOut" class="option" to="/">
+        <RouterLink @click="signOut" class="option" :to="{ name: 'Home' }">
           <SignOutIcon class="icon" />
           <p>Sign Out</p>
         </RouterLink>
@@ -68,7 +68,7 @@ export default {
 <style lang="scss" scoped>
 .profile-panel-container {
   position: absolute;
-  top: 60px;
+  top: 65px;
   right: 0;
   max-width: 280px;
   background-color: #303030;
@@ -101,13 +101,15 @@ export default {
     }
     .right {
       flex: 1;
+
       margin-left: 24px;
 
       p:nth-child(1) {
-        font-size: 14px;
+        font-size: 16px;
+        margin-bottom: 4px;
       }
       p:nth-child(2) {
-        font-size: 14px;
+        font-size: 12px;
       }
     }
   }
