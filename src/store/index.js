@@ -118,6 +118,12 @@ export const store = createStore({
     profileUserName: null,
     profileInitials: null,
     profileFirstName: null,
+
+    blogTitle: '',
+    blogHTMLContent: '',
+    blogCoverPhotoName: '',
+    blogPhotoFileURL: null,
+    blogPhotoPreview: false,
   },
   mutations: {
     toggleEditPost(state, payload) {
@@ -150,6 +156,18 @@ export const store = createStore({
     },
     changeUserName(state, payload) {
       state.profileUserName = payload;
+    },
+    updateBlogTitle(state, payload) {
+      state.blogTitle = payload;
+    },
+    updateBlogHTMLContent(state, payload) {
+      state.blogHTMLContent = payload;
+    },
+    updateBlogPhotoFileURL(state, payload) {
+      state.blogPhotoFileURL = payload;
+    },
+    updateBlogCoverPhotoName(state, payload) {
+      state.blogCoverPhotoName = payload;
     },
   },
   actions: {

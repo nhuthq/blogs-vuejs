@@ -86,9 +86,33 @@ export default {
       submitBlogSuccessMessage: 'Blog has been successfully created',
     };
   },
+  setup: () => {},
   computed: {
-    blogTitle: {},
-    blogHTML: {},
+    isAdmin() {
+      return this.$store.state.profileAdmin;
+    },
+    profileId() {
+      return this.$store.state.profileId;
+    },
+    blogTitle: {
+      get() {
+        return this.$store.state.blogTitle;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogTitle', payload);
+      },
+    },
+    blogCoverPhotoName() {
+      return this.$store.state.blogCoverPhotoName;
+    },
+    blogHTMLContent: {
+      get() {
+        return this.$store.state.blogHTMLContent;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogHTMLContent', payload);
+      },
+    },
   },
   methods: {
     closeModal() {

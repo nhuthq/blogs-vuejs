@@ -1,8 +1,8 @@
 <template>
   <div class="blog-cards-container container">
-    <div class="toggle-edit">
+    <div v-show="isAdmin" class="toggle-edit">
       <span>Toggle Editing Mode</span>
-      <input type="checkbox" />
+      <input type="checkbox" v-model="editMode" />
     </div>
     <div class="blog-cards-grid">
       <BlogCard
@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import BlogCard from '@/components/BlogCard.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
@@ -24,20 +24,24 @@ export default {
   components: {
     BlogCard,
   },
-  setup() {
-    const store = useStore();
-
-    const editMode = computed({
-      get: () => store.state.editPost,
-      set: (payload: any) => store.commit('toggleEditPost', payload),
-    });
-
-    const samplePostCards = computed(() => store.state.samplePostCards);
-
-    return {
-      editMode,
-      samplePostCards,
-    };
+  computed: {
+    isAdmin() {
+      return this.$store.state.profileAdmin;
+    },
+    samplePostCards() {
+      return this.$store.getters.blogPostCards;
+    },
+    editMode: {
+      get() {
+        return this.$store.state.editPost;
+      },
+      set(payload) {
+        this.$store.commit('toggleEditPost', payload);
+      },
+    },
+  },
+  beforeRouteLeave() {
+    this.$store.commit('toggleEditPost', false);
   },
 };
 </script>
