@@ -1,8 +1,9 @@
+import { store } from '@/store';
 import { createWebHistory, createRouter } from 'vue-router';
 import { firebaseAuth } from '@/services/firebase/firebaseInit';
 
-import { store } from '@/store';
 import Home from '@/views/Home.vue';
+import Admin from '@/views/Admin.vue';
 import Blogs from '@/views/Blogs.vue';
 import Login from '@/views/Login.vue';
 import Profile from '@/views/Profile.vue';
@@ -61,6 +62,15 @@ const routes = [
     component: Profile,
     meta: {
       title: 'Profile',
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin,
+    meta: {
+      title: 'Admin',
       requiresAuth: true,
     },
   },

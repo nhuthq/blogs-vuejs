@@ -7,14 +7,14 @@
         </h2>
         <p v-if="blogPost.welcomeScreen">{{ blogPost.content }}</p>
         <p v-else class="content-preview">{{ blogPost.content }}</p>
-        <RounterLink
+        <RouterLink
           v-if="blogPost.welcomeScreen"
           v-show="!user"
           class="link link-light"
-          to="#"
+          to="/login"
         >
           Login/register <IcArrow class="arrow arrow-light" />
-        </RounterLink>
+        </RouterLink>
         <RounterLink v-else class="link" to="#">
           View The Post <IcArrow class="arrow" />
         </RounterLink>
