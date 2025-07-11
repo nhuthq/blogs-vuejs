@@ -21,7 +21,7 @@
         </RouterLink>
       </div>
       <div class="option">
-        <RouterLink v-show="isAdmin" class="option" :to="{ name: '' }">
+        <RouterLink v-show="isAdmin" class="option" :to="{ name: 'Admin' }">
           <AdminIcon class="icon" />
           <p>Admin</p>
         </RouterLink>

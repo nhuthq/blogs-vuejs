@@ -13,14 +13,16 @@
           <Password class="icon" />
         </div>
       </div>
-      <RouterLink to="/forgot-password" class="forgot-password-link"
+      <RouterLink :to="{ name: 'ForgotPassword' }" class="forgot-password-link"
         >Forgot Password?</RouterLink
       >
       <div v-show="error" class="error">{{ errorMessage }}</div>
       <button @click.prevent="handleLogin">Login</button>
       <p class="register-link">
         Don't have an account?
-        <RouterLink to="/register" class="router-link">Register</RouterLink>
+        <RouterLink :to="{ name: 'Register' }" class="router-link"
+          >Register</RouterLink
+        >
       </p>
       <div class="angle"></div>
     </form>

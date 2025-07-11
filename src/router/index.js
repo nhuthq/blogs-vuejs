@@ -1,13 +1,15 @@
+import { store } from '@/store';
 import { createWebHistory, createRouter } from 'vue-router';
 import { firebaseAuth } from '@/services/firebase/firebaseInit';
 
-import { store } from '@/store';
 import Home from '@/views/Home.vue';
+import Admin from '@/views/Admin.vue';
 import Blogs from '@/views/Blogs.vue';
 import Login from '@/views/Login.vue';
 import Profile from '@/views/Profile.vue';
 import Register from '@/views/Register.vue';
 import ForgotPassword from '@/views/ForgotPassword.vue';
+import CreateBlog from '@/views/CreateBlog.vue';
 
 const routes = [
   {
@@ -48,7 +50,7 @@ const routes = [
   },
   {
     path: '/forgot-password',
-    name: 'Forgot Password',
+    name: 'ForgotPassword',
     component: ForgotPassword,
     meta: {
       title: 'Login',
@@ -64,6 +66,25 @@ const routes = [
       requiresAuth: true,
     },
   },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin,
+    meta: {
+      title: 'Admin',
+      requiresAuth: true,
+      requiresAdmin: true,
+    },
+  },
+  {
+    path: '/create-blog',
+    name: 'CreateBlog',
+    component: CreateBlog,
+    meta: {
+      title: 'CreateBlog',
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({
@@ -76,28 +97,28 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-router.beforeEach(async (to, from, next) => {
-  let user = store.state.user;
-  let admin = null;
+// router.beforeEach(async (to, from, next) => {
+//   let user = store.state.user;
+//   let admin = null;
 
-  if (user) {
-    let token = await user.getIdTokenResult();
-    admin = token.claims.admin;
-  }
+//   if (user) {
+//     let token = await user.getIdTokenResult();
+//     admin = token.claims.admin;
+//   }
 
-  if (to.matched.some((res) => res.meta.requiresAuth)) {
-    if (user) {
-      if (to.matched.some((res) => res.meta.requiresAdmin)) {
-        if (admin) {
-          return next();
-        }
-        return next({ name: 'Home' });
-      }
-      return next();
-    }
-    return next({ name: 'Home' });
-  }
-  return next();
-});
+//   if (to.matched.some((res) => res.meta.requiresAuth)) {
+//     if (user) {
+//       if (to.matched.some((res) => res.meta.requiresAdmin)) {
+//         if (admin) {
+//           return next();
+//         }
+//         return next({ name: 'Home' });
+//       }
+//       return next();
+//     }
+//     return next({ name: 'Home' });
+//   }
+//   return next();
+// });
 
 export default router;
