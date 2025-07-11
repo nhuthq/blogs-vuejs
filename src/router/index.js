@@ -10,6 +10,7 @@ import Profile from '@/views/Profile.vue';
 import Register from '@/views/Register.vue';
 import ForgotPassword from '@/views/ForgotPassword.vue';
 import CreateBlog from '@/views/CreateBlog.vue';
+import BlogPostPreview from '@/views/BlogPostPreview.vue';
 
 const routes = [
   {
@@ -82,6 +83,15 @@ const routes = [
     component: CreateBlog,
     meta: {
       title: 'CreateBlog',
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/post-preview',
+    name: 'BlogPreview',
+    component: BlogPostPreview,
+    meta: {
+      title: 'Blog Preview',
       requiresAuth: true,
     },
   },

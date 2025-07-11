@@ -1,6 +1,7 @@
 <template>
   <div class="create-blog-container">
     <Loading v-show="loading" />
+    <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
     <Modal
       v-if="modalActive"
       v-on:close-modal="closeModal"
@@ -28,8 +29,8 @@
           <button
             class="preview"
             @click="openPreviewCoverPhoto"
-            :disabled="!this.$store.state.blogPhotoFileURL"
-            :class="{ 'inactive-button': !this.$store.state.blogPhotoFileURL }"
+            :disabled="!this.$store.state.blogCoverPhotoURL"
+            :class="{ 'inactive-button': !this.$store.state.blogCoverPhotoURL }"
           >
             Preview Photo
           </button>
@@ -41,21 +42,15 @@
           toolbar="full"
           :modules="modules"
           contentType="html"
-          v-model:content="this.blogHTML"
+          v-model:content="this.blogHTMLContent"
           placeholder="Write your blog content here..."
         />
       </div>
       <div class="blog-actions">
-        <button
-          @click="submitBlog"
-          :class="{ 'inactive-button': !profileAdmin }"
-        >
-          Publish Blog
+        <button @click="submitBlog" :class="{ 'inactive-button': !isAdmin }">
+          Submit Blog
         </button>
-        <button
-          @click="previewBlog"
-          :class="{ 'inactive-button': !profileAdmin }"
-        >
+        <button @click="previewBlog" :class="{ 'inactive-button': !isAdmin }">
           Post Review
         </button>
       </div>
@@ -64,51 +59,215 @@
 </template>
 
 <script>
+import {
+  ref,
+  doc,
+  setDoc,
+  uploadBytes,
+  firestoreDB,
+  getDownloadURL,
+  firebaseStorage,
+} from '@/services/firebase/firebaseInit';
 import { QuillEditor } from '@vueup/vue-quill';
 
-import Loading from '@/components/Loading.vue';
 import ImageResize from 'quill-image-resize';
+import Loading from '@/components/Loading.vue';
 import ImageCompress from 'quill-image-compress';
+import BlogCoverPreview from '@/components/BlogCoverPreview.vue';
+
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 export default {
   name: 'CreateBlog',
   components: {
-    QuillEditor,
     Loading,
+    QuillEditor,
+    BlogCoverPreview,
   },
   data() {
     return {
       error: false,
       loading: false,
       modalActive: false,
+      coverPhotoFile: null,
       errorMessage: '',
       submitBlogSuccessMessage: 'Blog has been successfully created',
     };
   },
+  setup: () => {
+    const modules = [
+      {
+        namespace: 'imageResize',
+        module: ImageResize,
+        options: {
+          handleStyle: {
+            border: 'none',
+            color: '#303030',
+            backgroundColor: '#303030',
+          },
+        },
+      },
+      {
+        name: 'imageCompress',
+        module: ImageCompress,
+        options: {
+          quality: 0.7, // default
+          imageType: ['image/jpeg', 'image/jpg', 'image/png'], // default
+          debug: true, // default
+          suppressErrorLogging: false, // default
+          handleOnPaste: true, //default
+          insertIntoEditor: (imageBase64URL, imageBlob, editor) => {
+            const range = editor.getSelection();
+            editor.insertEmbed(
+              range.index,
+              'image',
+              `${imageBase64URL}`,
+              'user'
+            );
+          },
+        },
+      },
+    ];
+  },
   computed: {
-    blogTitle: {},
-    blogHTML: {},
+    isAdmin() {
+      return this.$store.state.profileAdmin;
+    },
+    // isAvailableToCreate() {
+    //   return (
+    //     this.blogTitle !== '' &&
+    //     this.blogHTMLContent !== '' &&
+    //     this.coverPhotoFile != null
+    //   );
+    // },
+    profileId() {
+      return this.$store.state.profileId;
+    },
+    blogTitle: {
+      get() {
+        return this.$store.state.blogTitle;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogTitle', payload);
+      },
+    },
+    blogCoverPhotoName() {
+      return this.$store.state.blogCoverPhotoName;
+    },
+    blogHTMLContent: {
+      get() {
+        return this.$store.state.blogHTMLContent;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogHTMLContent', payload);
+      },
+    },
   },
   methods: {
     closeModal() {
       this.modalActive = !this.modalActive;
     },
-    fileChange(event) {
-      //   this.coverPhotoFile = event.target.files[0];
+    fileChange() {
+      this.coverPhotoFile = this.$refs.blogPhoto.files[0];
+      const fileName = this.coverPhotoFile.name;
+      const fileURL = URL.createObjectURL(this.coverPhotoFile);
+      this.$store.commit('updateBlogCoverPhotoURL', fileURL);
+      this.$store.commit('updateBlogCoverPhotoName', fileName);
     },
     openPreviewCoverPhoto() {
-      //   this.$store.state.blogPhotoPreview = true;
+      this.$store.commit('updateBlogPhotoPreview', true);
     },
     previewBlog() {
-      //   this.$store.state.blogPhotoPreview = false;
+      if (this.blogTitle === '' || this.blogHTMLContent === '') {
+        this.error = true;
+        this.errorMessage =
+          'Please ensure Blog Title & Blog Post has been filled!';
+        setTimeout(() => {
+          this.error = false;
+        }, 3000);
+        return;
+      } else if (!this.blogCoverPhotoName) {
+        this.error = true;
+        this.errorMessage = 'Please ensure you uploaded a cover photo!';
+        setTimeout(() => {
+          this.error = false;
+        }, 3000);
+        return;
+      }
+      this.$router.push({ name: 'BlogPreview' });
     },
-    submitBlog() {
-      //   if (this.blogTitle === '' || this.blogHTML === '') {
+    async submitBlog() {
+      if (this.blogTitle === '' || this.blogHTMLContent === '') {
+        this.error = true;
+        this.errorMessage = 'Please fill out all the fields';
+        return;
+      }
+
+      this.loading = true;
+      this.error = false;
+      this.errorMessage = '';
+      setTimeout(() => {
+        this.loading = false;
+        this.error = false;
+      }, 5000);
+
+      // Gen unique ID
+      const blogID =
+        new Date().getTime().toString(36) + new Date().getUTCMilliseconds();
+      const coverPhotoName = `${blogID}${this.blogCoverPhotoName}`;
+      const coverPhotoRef = ref(
+        firebaseStorage,
+        `BlogPostCoverPhotos/${coverPhotoName}`
+      );
+      console.log('HERE:', blogID, coverPhotoName, coverPhotoRef);
+      // Upload the file and metadata
+      // uploadBytes(coverPhotoRef, this.coverPhotoFile).then(async () => {
+      //   try {
+      //     const timestamp = Date.now();
+      //     const downloadURL = await getDownloadURL(ref(coverPhotoRef)).catch(
+      //       (error) => {
+      //         this.error = true;
+      //         this.loading = false;
+      //         this.errorMessage = error;
+      //         console.error('Error download URL: ', error);
+
+      //         return;
+      //       }
+      //     );
+
+      //     const blogData = {
+      //       blogId: blogID,
+      //       blogTitle: this.blogTitle,
+      //       blogHTML: this.blogHTML,
+      //       blogCoverPhoto: downloadURL,
+      //       blogCoverPhotoName: coverPhotoName,
+      //       profileId: this.profileId,
+      //       isPublished: false,
+      //       createdDate: timestamp,
+      //       lastEditedDate: timestamp,
+      //     };
+
+      //     const blogsDocRef = doc(firestoreDB, 'blogs', blogID);
+      //     await setDoc(blogsDocRef, blogData, { merge: true }).then(
+      //       async () => {
+      //         await this.$store.dispatch('getPosts');
+      //         setTimeout(() => {
+      //           this.loading = false;
+      //           this.$router.push({
+      //             name: 'ViewBlog',
+      //             params: { blogId: blogsDocRef.id },
+      //           });
+      //         }, 2000);
+      //       }
+      //     );
+      //   } catch (error) {
       //     this.error = true;
-      //     this.errorMessage = 'Please fill out all the fields';
+      //     this.loading = false;
+      //     this.errorMessage = error;
+      //     console.error('Error adding document: ', error);
       //     return;
       //   }
+      // });
     },
   },
 };
