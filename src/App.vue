@@ -1,33 +1,41 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import Footer from './components/Footer.vue';
+import Navigation from './components/Navigation.vue';
+
+export default {
+  name: 'App',
+  components: {
+    Footer,
+    Navigation,
+  },
+};
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="app-wrapper">
+    <div class="app">
+      <Navigation />
+      <RouterView />
+      <Footer />
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Quicksand", sans-serif;
+  font-family: 'Quicksand', sans-serif;
 }
 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-width: 320px;
 }
 
 .container {
@@ -50,12 +58,12 @@ import HelloWorld from './components/HelloWorld.vue'
   margin-left: 8px;
   width: 12px;
   path {
-    fill: #000;
+    fill: black;
   }
 }
 .arrow-light {
   path {
-    fill: #fff;
+    fill: white;
   }
 }
 
