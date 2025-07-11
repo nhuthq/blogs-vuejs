@@ -1,5 +1,5 @@
 <template>
-  <div class="blog-post-container no-user">
+  <div class="blog-post-container" :class="{ 'no-user': !user }">
     <div class="blog-content">
       <div>
         <h2>
@@ -9,6 +9,7 @@
         <p v-else class="content-preview">{{ blogPost.content }}</p>
         <RounterLink
           v-if="blogPost.welcomeScreen"
+          v-show="!user"
           class="link link-light"
           to="#"
         >
@@ -29,6 +30,8 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import { Blog } from '../models/Blog';
 import { RouterLink } from 'vue-router';
 import imgCoffee from '@/assets/thumbnail/coffee.jpg';
@@ -64,6 +67,15 @@ export default {
       const found = mockImages.find((img) => img.name === imageName);
       return found ? found.value : imgCoding; // default fallback
     },
+  },
+  setup() {
+    const store = useStore();
+
+    const user = computed(() => store.state.user);
+
+    return {
+      user,
+    };
   },
 };
 </script>
@@ -166,8 +178,7 @@ export default {
       object-position: center;
     }
   }
-
-  &:nth-child(even) {
+  w &:nth-child(even) {
     .blog-content {
       order: 2;
     }

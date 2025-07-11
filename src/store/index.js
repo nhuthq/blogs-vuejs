@@ -1,4 +1,13 @@
 import { createStore } from 'vuex';
+import {
+  firestoreDB,
+  firebaseAuth,
+  doc,
+  getDoc,
+  getDocs,
+  deleteDoc,
+  collection,
+} from '@/services/firebase/firebaseInit.js';
 
 export const store = createStore({
   state: {
@@ -100,14 +109,56 @@ export const store = createStore({
         },
       },
     ],
-    editPost: null,
+    user: null,
+    editMode: null,
+    profileId: null,
+    profileAdmin: null,
+    profileEmail: null,
+    profileLastName: null,
+    profileUserName: null,
+    profileInitials: null,
+    profileFirstName: null,
   },
   mutations: {
     toggleEditPost(state, payload) {
       state.editPost = payload;
     },
+    updateUser(state, payload) {
+      state.user = payload;
+    },
+    setUserProfile(state, payload) {
+      state.profileId = payload.id;
+      state.profileEmail = payload.email;
+      state.profileLastName = payload.lastName;
+      state.profileUserName = payload.userName;
+      state.profileFirstName = payload.firstName;
+      state.profileAdmin = payload.isAdmin ?? false;
+    },
+    setProfileInitials(state) {
+      state.profileInitials =
+        state.profileFirstName.match(/(\b\S)?/g).join('') +
+        state.profileLastName.match(/(\b\S)?/g).join('');
+    },
   },
-  actions: {},
+  actions: {
+    async getCurrentUser({ commit }) {
+      const docRef = doc(firestoreDB, 'users', firebaseAuth.currentUser.uid);
+      await getDoc(docRef)
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+
+            commit('setUserProfile', userData);
+            commit('setProfileInitials');
+          } else {
+            console.log('No such document!');
+          }
+        })
+        .catch((error) => {
+          console.log('Error getting document:', error);
+        });
+    },
+  },
   getters: {},
   modules: {},
 });
