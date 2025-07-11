@@ -9,9 +9,9 @@
       <div class="nav-links" v-if="isPCView">
         <ul>
           <RouterLink class="link" to="#">Home</RouterLink>
-          <RouterLink class="link" to="#">Blogs</RouterLink>
+          <RouterLink class="link" to="/blogs">Blogs</RouterLink>
           <!-- <RouterLink class="link" to="#">Create Blogs</RouterLink> -->
-          <RouterLink class="link" to="#">Login/Register</RouterLink>
+          <RouterLink class="link" to="/login">Login</RouterLink>
         </ul>
       </div>
     </nav>
@@ -23,9 +23,9 @@
     >
       <ul class="mobile-nav">
         <RouterLink class="link" to="#">Home</RouterLink>
-        <RouterLink class="link" to="#">Blogs</RouterLink>
+        <RouterLink class="link" to="/blogs">Blogs</RouterLink>
         <!-- <RouterLink class="link" to="#">Create Blogs</RouterLink> -->
-        <RouterLink class="link" to="#">Login/Register</RouterLink>
+        <RouterLink class="link" to="/logins">Login</RouterLink>
       </ul>
     </Transition>
   </Header>

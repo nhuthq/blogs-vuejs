@@ -2,6 +2,8 @@ import { createWebHistory, createRouter } from 'vue-router';
 import Home from '../views/Home.vue';
 import Blogs from '@/views/Blogs.vue';
 import Login from '@/views/Login.vue';
+import Register from '@/views/Register.vue';
+import ForgotPassword from '@/views/ForgotPassword.vue';
 
 // Khai báo route
 const routes = [
@@ -19,6 +21,16 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
+  },
+  {
+    path: '/forgot-password',
+    name: 'Forgot Password',
+    component: ForgotPassword,
   },
 ];
 
