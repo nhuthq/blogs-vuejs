@@ -1,5 +1,6 @@
 <template>
   <div class="login-container">
+    <Loading v-if="loading" />
     <form class="login-form">
       <h2>Welcome Back</h2>
       <div class="inputs-container">
@@ -27,9 +28,17 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
+import {
+  firebaseAuth,
+  signInWithEmailAndPassword,
+  // @ts-ignore
+} from '@/services/firebase/firebaseInit';
 import { RouterLink } from 'vue-router';
+// @ts-ignore
+import { isValidEmail } from '../helpers/utility';
 
+import Loading from '@/components/Loading.vue';
 import Email from '@/assets/Icons/envelope-regular.svg';
 import Password from '@/assets/Icons/lock-alt-solid.svg';
 
@@ -37,20 +46,57 @@ export default {
   name: 'Login',
   components: {
     Email,
+    Loading,
     Password,
     RouterLink,
   },
   data() {
     return {
+      error: false,
+      loading: false,
       email: '',
       password: '',
-      error: false,
       errorMessage: '',
     };
   },
   methods: {
-    handleLogin() {
-      console.log('handleLogin');
+    async handleLogin() {
+      if (this.email === '' || this.password === '') {
+        this.error = true;
+        this.errorMessage = 'Please fill out all the fields';
+        return;
+      }
+      if (!isValidEmail(this.email)) {
+        this.error = true;
+        this.errorMessage = 'Please enter a valid email address';
+        return;
+      }
+      this.loading = true;
+      await signInWithEmailAndPassword(firebaseAuth, this.email, this.password)
+        .then(() => {
+          this.error = false;
+          this.loading = false;
+          this.$router.push({ name: 'Home' });
+        })
+        .catch((error) => {
+          switch (error.code) {
+            case 'auth/invalid-email':
+              this.errorMessage = 'Invalid email';
+              break;
+            case 'auth/user-not-found':
+              this.errorMessage = 'No account with that email was found';
+              break;
+            case 'auth/wrong-password':
+              this.errorMessage = 'Incorrect password';
+              break;
+            default:
+              this.errorMessage = `${error}`;
+              console.log('Erorr: ', error);
+              break;
+          }
+          this.error = true;
+          this.loading = false;
+        });
     },
   },
 };

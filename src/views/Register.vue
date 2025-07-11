@@ -1,5 +1,11 @@
 <template>
   <div class="register-container">
+    <Loading v-if="loading" />
+    <Modal
+      v-if="modalActive"
+      v-on:close-modal="closeModal"
+      :modalMessage="resgisterSuccessMessage"
+    />
     <form class="register-form">
       <h2>Let’s Get Started</h2>
       <div class="inputs-container">
@@ -20,7 +26,7 @@
           <Email class="icon" />
         </div>
         <div class="input">
-          <input type="text" placeholder="Password" v-model="password" />
+          <input type="password" placeholder="Password" v-model="password" />
           <Password class="icon" />
         </div>
         <div v-show="error" class="error">{{ errorMessage }}</div>
@@ -38,8 +44,19 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
+import {
+  doc,
+  setDoc,
+  firestoreDB,
+  firebaseAuth,
+  createUserWithEmailAndPassword,
+  // @ts-ignore
+} from '@/services/firebase/firebaseInit';
 import { RouterLink } from 'vue-router';
+
+import Modal from '@/components/Modal.vue';
+import Loading from '@/components/Loading.vue';
 import User from '@/assets/Icons/user-alt-light.svg';
 import Email from '@/assets/Icons/envelope-regular.svg';
 import Password from '@/assets/Icons/lock-alt-solid.svg';
@@ -48,24 +65,101 @@ export default {
   name: 'Register',
   components: {
     User,
+    Modal,
     Email,
+    Loading,
     Password,
     RouterLink,
   },
   data() {
     return {
-      firstName: '',
-      lastName: '',
-      userName: '',
+      error: false,
+      loading: false,
+      modalActive: false,
       email: '',
       password: '',
-      error: false,
+      lastName: '',
+      userName: '',
+      firstName: '',
       errorMessage: '',
+      resgisterSuccessMessage:
+        'Congratulations! Your account have been successfully created.',
     };
   },
   methods: {
-    handleRegister() {
-      console.log('handleLogin');
+    async handleRegister() {
+      if (
+        this.email === '' ||
+        this.password === '' ||
+        this.lastName === '' ||
+        this.userName === '' ||
+        this.firstName === ''
+      ) {
+        this.error = true;
+        this.loading = false;
+        this.errorMessage = 'Please fill out all the fields';
+        return;
+      }
+      this.loading = true;
+      this.error = false;
+      this.errorMessage = '';
+
+      await createUserWithEmailAndPassword(
+        firebaseAuth,
+        this.email,
+        this.password
+      )
+        .then(async () => {
+          try {
+            const userID = firebaseAuth.currentUser?.uid;
+            if (!userID) {
+              this.error = true;
+              this.loading = false;
+              this.errorMessage = 'User ID not found';
+              return;
+            }
+            const data = {
+              firstName: this.firstName,
+              lastName: this.lastName,
+              userName: this.userName,
+              email: this.email,
+            };
+
+            const docRef = doc(firestoreDB, 'users', userID);
+
+            await setDoc(docRef, data, { merge: true }).then((respone) => {
+              this.loading = false;
+              this.modalActive = true;
+              console.log('Document written with ID: ', respone);
+            });
+          } catch (error) {
+            this.error = true;
+            this.loading = false;
+            this.errorMessage = error.toString();
+            console.error('Error adding document: ', this.errorMessage);
+            return;
+          }
+        })
+        .catch((error) => {
+          switch (error.code) {
+            case 'auth/email-already-in-use':
+              this.errorMessage =
+                'Email already in use, Please choose another email';
+              break;
+            case 'auth/invalid-email':
+              this.errorMessage = 'Invalid email';
+              break;
+            default:
+              this.errorMessage = 'Somethings went wrong, Please try again!';
+              break;
+          }
+          this.error = true;
+          this.loading = false;
+        });
+    },
+    closeModal() {
+      this.modalActive = !this.modalActive;
+      this.$router.push({ name: 'Login' });
     },
   },
 };
