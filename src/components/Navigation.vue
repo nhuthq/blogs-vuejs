@@ -15,7 +15,7 @@
         </ul>
       </div>
     </nav>
-    <MenuIcon @click="toggleSPNav" class="menuIcon" v-if="isSPView" />
+    <MenuIcon @click="toggleSPNav" class="menu-icon" v-if="isSPView" />
     <Transition
       :class="{ 'slide-out': !isOpenSPNav }"
       class="mobile-nav"
@@ -140,7 +140,7 @@ header {
     }
   }
 
-  .menuIcon {
+  .menu-icon {
     cursor: pointer;
     top: 32px;
     right: 25px;
