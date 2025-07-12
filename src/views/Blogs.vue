@@ -16,8 +16,6 @@
 
 <script>
 import BlogCard from '@/components/BlogCard.vue';
-import { useStore } from 'vuex';
-import { computed } from 'vue';
 
 export default {
   name: 'Blogs',
@@ -29,7 +27,7 @@ export default {
       return this.$store.state.profileAdmin;
     },
     samplePostCards() {
-      return this.$store.getters.blogPostCards;
+      return this.$store.getters.samplePostCards;
     },
     editMode: {
       get() {

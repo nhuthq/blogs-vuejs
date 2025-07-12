@@ -11,6 +11,7 @@ import {
 
 export const store = createStore({
   state: {
+    blogPosts: [],
     samplePostCards: [
       {
         id: '1',
@@ -109,6 +110,8 @@ export const store = createStore({
         },
       },
     ],
+    postLoaded: null,
+
     user: null,
     editMode: null,
     profileId: null,
@@ -122,8 +125,17 @@ export const store = createStore({
     blogTitle: '',
     blogHTMLContent: '',
     blogCoverPhotoName: '',
+
     blogPhotoPreview: false,
     blogCoverPhotoURL: null,
+  },
+  getters: {
+    featureBlogs(state) {
+      return state.blogPosts.slice(0, 2);
+    },
+    featureBlogsCard(state) {
+      return state.blogPosts.slice(2, 10);
+    },
   },
   mutations: {
     toggleEditPost(state, payload) {
@@ -160,6 +172,9 @@ export const store = createStore({
     updateBlogTitle(state, payload) {
       state.blogTitle = payload;
     },
+    updateBlogPhotoPreview(state, payload) {
+      state.blogPhotoPreview = payload;
+    },
     updateBlogHTMLContent(state, payload) {
       state.blogHTMLContent = payload;
     },
@@ -169,9 +184,6 @@ export const store = createStore({
     updateBlogCoverPhotoName(state, payload) {
       state.blogCoverPhotoName = payload;
     },
-    updateBlogPhotoPreview(state, payload) {
-      state.blogPhotoPreview = payload;
-    },
   },
   actions: {
     async getCurrentUser({ commit }) {
@@ -180,7 +192,7 @@ export const store = createStore({
         .then((docSnap) => {
           if (docSnap.exists()) {
             const userData = docSnap.data();
-
+            userData.id = firebaseAuth.currentUser.uid;
             commit('setUserProfile', userData);
             commit('setProfileInitials');
           } else {
@@ -190,6 +202,27 @@ export const store = createStore({
         .catch((error) => {
           console.log('Error getting document:', error);
         });
+    },
+    async getPosts({ state }) {
+      const blogsSnapshot = await getDocs(collection(firestoreDB, 'blogs'));
+      blogsSnapshot.forEach((doc) => {
+        if (!state.blogPosts.some((post) => post.blogId === doc.id)) {
+          const docData = doc.data();
+          const data = {
+            id: docData.blogId,
+            title: docData.blogTitle,
+            htmlContent: docData.blogHTML,
+            coverPhoto: docData.blogCoverPhoto,
+            coverPhotoName: docData.blogCoverPhotoName,
+            authorID: docData.profileId,
+            isPublished: docData.isPublished,
+            createdDate: docData.createdDate,
+            lastEditedDate: docData.lastEditedDate,
+          };
+          state.blogPosts.push(data);
+        }
+      });
+      state.postLoaded = true;
     },
   },
   getters: {},

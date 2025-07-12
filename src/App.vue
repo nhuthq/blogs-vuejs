@@ -12,8 +12,8 @@ export default {
   },
   created() {
     firebaseAuth.onAuthStateChanged((currentUser) => {
-      this.$store.commit('updateUser', currentUser);
       if (currentUser) {
+        this.$store.commit('updateUser', currentUser);
         this.$store.dispatch('getCurrentUser');
       }
     });

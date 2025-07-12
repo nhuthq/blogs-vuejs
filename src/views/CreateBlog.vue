@@ -47,10 +47,16 @@
         />
       </div>
       <div class="blog-actions">
-        <button @click="submitBlog" :class="{ 'inactive-button': !isAdmin }">
+        <button
+          @click="submitBlog"
+          :class="{ 'inactive-button': !isAdmin || !isAvailableToCreate }"
+        >
           Submit Blog
         </button>
-        <button @click="previewBlog" :class="{ 'inactive-button': !isAdmin }">
+        <button
+          @click="previewBlog"
+          :class="{ 'inactive-button': !isAdmin || !isAvailableToCreate }"
+        >
           Post Review
         </button>
       </div>
@@ -70,6 +76,7 @@ import {
 } from '@/services/firebase/firebaseInit';
 import { QuillEditor } from '@vueup/vue-quill';
 
+import Modal from '@/components/Modal.vue';
 import ImageResize from 'quill-image-resize';
 import Loading from '@/components/Loading.vue';
 import ImageCompress from 'quill-image-compress';
@@ -80,6 +87,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 export default {
   name: 'CreateBlog',
   components: {
+    Modal,
     Loading,
     QuillEditor,
     BlogCoverPreview,
@@ -128,20 +136,31 @@ export default {
         },
       },
     ];
+    return { modules };
   },
   computed: {
     isAdmin() {
       return this.$store.state.profileAdmin;
     },
-    // isAvailableToCreate() {
-    //   return (
-    //     this.blogTitle !== '' &&
-    //     this.blogHTMLContent !== '' &&
-    //     this.coverPhotoFile != null
-    //   );
-    // },
     profileId() {
       return this.$store.state.profileId;
+    },
+    isAvailableToCreate: {
+      get() {
+        return (
+          this.blogTitle !== '' &&
+          this.blogHTMLContent.replace(/<[^>]*>/g, '').trim() !== '' &&
+          (this.coverPhotoFile != null || this.blogCoverPhotoName !== '')
+        );
+      },
+    },
+    blogCoverPhotoURL: {
+      get() {
+        return this.$store.state.blogCoverPhotoURL;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogCoverPhotoURL', payload);
+      },
     },
     blogTitle: {
       get() {
@@ -151,8 +170,13 @@ export default {
         this.$store.commit('updateBlogTitle', payload);
       },
     },
-    blogCoverPhotoName() {
-      return this.$store.state.blogCoverPhotoName;
+    blogCoverPhotoName: {
+      get() {
+        return this.$store.state.blogCoverPhotoName;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogCoverPhotoName', payload);
+      },
     },
     blogHTMLContent: {
       get() {
@@ -171,47 +195,35 @@ export default {
       this.coverPhotoFile = this.$refs.blogPhoto.files[0];
       const fileName = this.coverPhotoFile.name;
       const fileURL = URL.createObjectURL(this.coverPhotoFile);
+      console.log('FILE CHANGE:', fileName, fileURL);
       this.$store.commit('updateBlogCoverPhotoURL', fileURL);
       this.$store.commit('updateBlogCoverPhotoName', fileName);
+    },
+
+    clearForm() {
+      this.blogTitle = '';
+      this.blogHTMLContent = '<p></p>';
+      this.blogCoverPhotoName = '';
+      this.blogCoverPhotoURL = null;
     },
     openPreviewCoverPhoto() {
       this.$store.commit('updateBlogPhotoPreview', true);
     },
     previewBlog() {
-      if (this.blogTitle === '' || this.blogHTMLContent === '') {
-        this.error = true;
-        this.errorMessage =
-          'Please ensure Blog Title & Blog Post has been filled!';
-        setTimeout(() => {
-          this.error = false;
-        }, 3000);
-        return;
-      } else if (!this.blogCoverPhotoName) {
-        this.error = true;
-        this.errorMessage = 'Please ensure you uploaded a cover photo!';
-        setTimeout(() => {
-          this.error = false;
-        }, 3000);
-        return;
-      }
       this.$router.push({ name: 'BlogPreview' });
     },
     async submitBlog() {
-      if (this.blogTitle === '' || this.blogHTMLContent === '') {
+      if (!this.isAvailableToCreate) {
         this.error = true;
-        this.errorMessage = 'Please fill out all the fields';
+        this.errorMessage =
+          'Please ensure Blog Title & Blog Post & Cover Photo has been filled!';
         return;
       }
 
       this.loading = true;
       this.error = false;
       this.errorMessage = '';
-      setTimeout(() => {
-        this.loading = false;
-        this.error = false;
-      }, 5000);
 
-      // Gen unique ID
       const blogID =
         new Date().getTime().toString(36) + new Date().getUTCMilliseconds();
       const coverPhotoName = `${blogID}${this.blogCoverPhotoName}`;
@@ -219,55 +231,56 @@ export default {
         firebaseStorage,
         `BlogPostCoverPhotos/${coverPhotoName}`
       );
-      console.log('HERE:', blogID, coverPhotoName, coverPhotoRef);
-      // Upload the file and metadata
-      // uploadBytes(coverPhotoRef, this.coverPhotoFile).then(async () => {
-      //   try {
-      //     const timestamp = Date.now();
-      //     const downloadURL = await getDownloadURL(ref(coverPhotoRef)).catch(
-      //       (error) => {
-      //         this.error = true;
-      //         this.loading = false;
-      //         this.errorMessage = error;
-      //         console.error('Error download URL: ', error);
+      uploadBytes(coverPhotoRef, this.coverPhotoFile).then(async () => {
+        try {
+          const downloadURL = await getDownloadURL(ref(coverPhotoRef)).catch(
+            (error) => {
+              this.error = true;
+              this.loading = false;
+              this.errorMessage = error;
+              console.error('Error get image download URL: ', error);
 
-      //         return;
-      //       }
-      //     );
+              return;
+            }
+          );
 
-      //     const blogData = {
-      //       blogId: blogID,
-      //       blogTitle: this.blogTitle,
-      //       blogHTML: this.blogHTML,
-      //       blogCoverPhoto: downloadURL,
-      //       blogCoverPhotoName: coverPhotoName,
-      //       profileId: this.profileId,
-      //       isPublished: false,
-      //       createdDate: timestamp,
-      //       lastEditedDate: timestamp,
-      //     };
+          const timestamp = Date.now();
+          const blogsDocRef = doc(firestoreDB, 'blogs', blogID);
+          const blogData = {
+            id: blogID,
+            title: this.blogTitle,
+            shortDescription: '',
+            htmlContent: this.blogHTMLContent,
+            coverPhotoURL: downloadURL,
+            coverPhotoName: this.blogCoverPhotoName,
+            authorID: this.profileId,
+            isPublished: false,
+            createdDate: timestamp,
+            lastEditedDate: timestamp,
+          };
 
-      //     const blogsDocRef = doc(firestoreDB, 'blogs', blogID);
-      //     await setDoc(blogsDocRef, blogData, { merge: true }).then(
-      //       async () => {
-      //         await this.$store.dispatch('getPosts');
-      //         setTimeout(() => {
-      //           this.loading = false;
-      //           this.$router.push({
-      //             name: 'ViewBlog',
-      //             params: { blogId: blogsDocRef.id },
-      //           });
-      //         }, 2000);
-      //       }
-      //     );
-      //   } catch (error) {
-      //     this.error = true;
-      //     this.loading = false;
-      //     this.errorMessage = error;
-      //     console.error('Error adding document: ', error);
-      //     return;
-      //   }
-      // });
+          await setDoc(blogsDocRef, blogData, { merge: true }).then(
+            async () => {
+              this.clearForm();
+              // await this.$store.dispatch('getPosts');
+              console.log('Blog submitted successfully');
+              setTimeout(() => {
+                this.loading = false;
+                this.$router.push({
+                  name: 'Home',
+                });
+              }, 2000);
+            }
+          );
+        } catch (error) {
+          this.error = true;
+          this.loading = false;
+          this.errorMessage = `Error whilte submitting Blog: ${error.message}`;
+
+          console.error(this.errorMessage);
+          return;
+        }
+      });
     },
   },
 };
@@ -374,6 +387,17 @@ export default {
         margin-left: 16px;
         align-content: center;
       }
+
+      .clear-file {
+        margin-left: 16px;
+        background-color: #ff6b6b;
+        font-size: 12px;
+        padding: 8px 16px;
+
+        &:hover {
+          background-color: rgba(255, 107, 107, 0.7);
+        }
+      }
     }
   }
 
@@ -384,8 +408,7 @@ export default {
 
   .blog-editor {
     height: 60vh;
-    display: flex;
-    flex-direction: column;
+    overflow: auto;
   }
 
   .blog-actions {

@@ -56,9 +56,6 @@ export default {
       error: false,
       loading: false,
       modalActive: false,
-      email: '',
-      lastName: '',
-      userName: '',
       errorMessage: '',
       modalUpdateSuccessMessage: 'Changes were saved!',
     };
@@ -69,7 +66,7 @@ export default {
         return this.$store.state.profileFirstName;
       },
       set(payload) {
-        // this.$store.commit('changeFirstName', payload);
+        this.$store.commit('changeFirstName', payload);
       },
     },
     lastName: {
@@ -77,7 +74,7 @@ export default {
         return this.$store.state.profileLastName;
       },
       set(payload) {
-        // this.$store.commit('changeLastName', payload);
+        this.$store.commit('changeLastName', payload);
       },
     },
     userName: {
@@ -85,7 +82,7 @@ export default {
         return this.$store.state.profileUserName;
       },
       set(payload) {
-        // this.$store.commit('changeUserName', payload);
+        this.$store.commit('changeUserName', payload);
       },
     },
     email: {
