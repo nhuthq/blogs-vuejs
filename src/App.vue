@@ -10,7 +10,32 @@ export default {
     Footer,
     Navigation,
   },
+  data() {
+    return {
+      navigation: null,
+    };
+  },
+  computed: {
+    blogsFetched() {
+      return this.$store.state.blogsFetched;
+    },
+  },
+  methods: {
+    checkRoute() {
+      if (
+        this.$route.name === 'Login' ||
+        this.$route.name === 'Register' ||
+        this.$route.name === 'ForgotPassword'
+      ) {
+        this.navigation = false;
+        return;
+      }
+      this.navigation = true;
+    },
+  },
   created() {
+    this.checkRoute();
+    this.$store.dispatch('getBlogs');
     firebaseAuth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
         this.$store.commit('updateUser', currentUser);
@@ -18,15 +43,20 @@ export default {
       }
     });
   },
+  watch: {
+    $route() {
+      this.checkRoute();
+    },
+  },
 };
 </script>
 
 <template>
-  <div class="app-wrapper">
+  <div class="app-wrapper" v-if="blogsFetched">
     <div class="app">
-      <Navigation />
+      <Navigation v-if="navigation" />
       <RouterView />
-      <Footer />
+      <Footer v-if="navigation" />
     </div>
   </div>
 </template>

@@ -3,7 +3,7 @@
     <BlogPost :blogPost="welcomePost" />
     <BlogPost
       :blogPost="item"
-      v-for="(item, index) in samplePosts"
+      v-for="(item, index) in featureBlogs"
       :key="index"
     />
     <div class="blog-cards-container">
@@ -12,15 +12,15 @@
         <div class="blog-cards-grid">
           <BlogCard
             :blogPost="item"
-            v-for="(item, index) in samplePostCards"
+            v-for="(item, index) in featureBlogsCard"
             :key="index"
           />
         </div>
       </div>
     </div>
-    <div class="subscribe-container">
+    <div v-if="!user" class="subscribe-container">
       <div class="container">
-        <h2>Never mis a post. Register for yoru free account today!</h2>
+        <h2>Never miss a post. Register for yoru free account today!</h2>
         <RouterLink class="router-button" to="#">
           Register for VeNtura Blogs <IcArrow class="arrow arrow-light" />
         </RouterLink>
@@ -46,26 +46,28 @@ export default {
       welcomePost: {
         id: '1',
         title: 'Welcome!',
-        content:
+        shortDescription: '',
+        htmlContent:
           'Weekly blog articles with all things programming including HTML, CSS, JavaScript and more. Register today to never miss a post!',
-        coverPhoto: 'coding',
+        coverPhotoURL: 'coding',
         welcomeScreen: true,
         coverPhotoName: 'coding',
         isPublished: true,
         createdDate: '2025-07-04',
         lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
+        authorID: '1',
       },
     };
   },
   computed: {
-    samplePostCards() {
-      return this.$store.state.samplePostCards;
+    user() {
+      return this.$store.state.user;
+    },
+    featureBlogs() {
+      return this.$store.getters.featureBlogs;
+    },
+    featureBlogsCard() {
+      return this.$store.getters.featureBlogsCard;
     },
   },
 };

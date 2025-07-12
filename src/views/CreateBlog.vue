@@ -190,12 +190,13 @@ export default {
   methods: {
     closeModal() {
       this.modalActive = !this.modalActive;
+      this.$router.push({ name: 'Home' });
     },
     fileChange() {
       this.coverPhotoFile = this.$refs.blogPhoto.files[0];
       const fileName = this.coverPhotoFile.name;
       const fileURL = URL.createObjectURL(this.coverPhotoFile);
-      console.log('FILE CHANGE:', fileName, fileURL);
+
       this.$store.commit('updateBlogCoverPhotoURL', fileURL);
       this.$store.commit('updateBlogCoverPhotoName', fileName);
     },
@@ -266,9 +267,7 @@ export default {
               console.log('Blog submitted successfully');
               setTimeout(() => {
                 this.loading = false;
-                this.$router.push({
-                  name: 'Home',
-                });
+                this.modalActive = true;
               }, 2000);
             }
           );

@@ -5,11 +5,7 @@
       <input type="checkbox" v-model="editMode" />
     </div>
     <div class="blog-cards-grid">
-      <BlogCard
-        :blogPost="item"
-        v-for="(item, index) in samplePostCards"
-        :key="index"
-      />
+      <BlogCard :blogPost="item" v-for="(item, index) in blogs" :key="index" />
     </div>
   </div>
 </template>
@@ -26,20 +22,20 @@ export default {
     isAdmin() {
       return this.$store.state.profileAdmin;
     },
-    samplePostCards() {
-      return this.$store.getters.samplePostCards;
+    blogs() {
+      return this.$store.state.blogPosts;
     },
     editMode: {
       get() {
-        return this.$store.state.editPost;
+        return this.$store.state.editMode;
       },
       set(payload) {
-        this.$store.commit('toggleEditPost', payload);
+        this.$store.commit('toggleEditMode', payload);
       },
     },
   },
   beforeRouteLeave() {
-    this.$store.commit('toggleEditPost', false);
+    this.$store.commit('toggleEditMode', false);
   },
 };
 </script>

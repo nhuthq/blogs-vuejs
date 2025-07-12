@@ -12,105 +12,7 @@ import {
 export const store = createStore({
   state: {
     blogPosts: [],
-    samplePostCards: [
-      {
-        id: '1',
-        title: 'Sample Post 1',
-        content: 'Sample content 1',
-        coverPhoto: 'codingnight',
-        coverPhotoName: 'codingnight',
-        isPublished: true,
-        createdDate: '2025-07-04',
-        lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
-      },
-      {
-        id: '2',
-        title: 'Sample Post 2',
-        content: 'Sample content 2',
-        coverPhoto: 'photographer',
-        coverPhotoName: 'photographer',
-        isPublished: true,
-        createdDate: '2025-07-04',
-        lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
-      },
-      {
-        id: '3',
-        title: 'Sample Post 3',
-        content: 'Sample content 3',
-        coverPhoto: 'phuquoc',
-        coverPhotoName: 'phuquoc',
-        isPublished: true,
-        createdDate: '2025-07-04',
-        lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
-      },
-      {
-        id: '4',
-        title: 'Sample Post 4',
-        content: 'Sample content 4',
-        coverPhoto: 'nhatrang',
-        coverPhotoName: 'nhatrang',
-        isPublished: true,
-        createdDate: '2025-07-04',
-        lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
-      },
-      {
-        id: '5',
-        title: 'Sample Post 5',
-        content: 'Sample content 5',
-        coverPhoto: 'hoian',
-        coverPhotoName: 'hoian',
-        isPublished: true,
-        createdDate: '2025-07-04',
-        lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
-      },
-      {
-        id: '6',
-        title: 'Sample Post 6',
-        content: 'Sample content 6',
-        coverPhoto: 'danang',
-        coverPhotoName: 'danang',
-        isPublished: true,
-        createdDate: '2025-07-04',
-        lastEditedDate: '2025-07-04',
-        author: {
-          id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          age: 30,
-        },
-      },
-    ],
-    postLoaded: null,
+    blogsFetched: null,
 
     user: null,
     editMode: null,
@@ -138,8 +40,8 @@ export const store = createStore({
     },
   },
   mutations: {
-    toggleEditPost(state, payload) {
-      state.editPost = payload;
+    toggleEditMode(state, payload) {
+      state.editMode = payload;
     },
     updateUser(state, payload) {
       state.user = payload;
@@ -203,18 +105,19 @@ export const store = createStore({
           console.log('Error getting document:', error);
         });
     },
-    async getPosts({ state }) {
+    async getBlogs({ state }) {
       const blogsSnapshot = await getDocs(collection(firestoreDB, 'blogs'));
       blogsSnapshot.forEach((doc) => {
         if (!state.blogPosts.some((post) => post.blogId === doc.id)) {
           const docData = doc.data();
           const data = {
-            id: docData.blogId,
-            title: docData.blogTitle,
-            htmlContent: docData.blogHTML,
-            coverPhoto: docData.blogCoverPhoto,
-            coverPhotoName: docData.blogCoverPhotoName,
-            authorID: docData.profileId,
+            id: docData.id,
+            title: docData.title,
+            shortDescription: docData.shortDescription,
+            htmlContent: docData.htmlContent,
+            coverPhotoURL: docData.coverPhotoURL,
+            coverPhotoName: docData.coverPhotoName,
+            authorID: docData.authorID,
             isPublished: docData.isPublished,
             createdDate: docData.createdDate,
             lastEditedDate: docData.lastEditedDate,
@@ -222,9 +125,9 @@ export const store = createStore({
           state.blogPosts.push(data);
         }
       });
-      state.postLoaded = true;
+      state.blogsFetched = true;
     },
   },
-  getters: {},
+
   modules: {},
 });

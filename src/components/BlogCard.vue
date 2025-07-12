@@ -1,6 +1,6 @@
 <template>
   <div class="blog-card-container">
-    <div class="icons">
+    <div v-if="editMode" class="icons">
       <div class="icon" @click="editBlog">
         <IcEdit class="edit" />
       </div>
@@ -10,7 +10,7 @@
     </div>
     <img
       @click="viewPost"
-      :src="getImage(blogPost.coverPhoto)"
+      :src="blogPost.coverPhotoURL"
       :alt="blogPost.coverPhotoName"
     />
     <div class="info">
@@ -31,22 +31,14 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import { Blog } from '../models/Blog';
 import { RouterLink } from 'vue-router';
 
 import IcEdit from '@/assets/Icons/edit-regular.svg';
 import IcDelete from '@/assets/Icons/trash-regular.svg';
 import IcArrow from '@/assets/Icons/arrow-right-light.svg';
-
-import imgCoffee from '@/assets/thumbnail/coffee.jpg';
-import imgCoding from '@/assets/thumbnail/coding.jpg';
-import imgCodingNight from '@/assets/thumbnail/codingnight.jpg';
-import imgPhotographer from '@/assets/thumbnail/photographer.jpg';
-
-import imgDaNang from '@/assets/thumbnail/danang.jpg';
-import imgNhaTrang from '@/assets/thumbnail/nhatrang.jpg';
-import imgHoiAN from '@/assets/thumbnail/hoian.jpg';
-import imgPhuQuoc from '@/assets/thumbnail/phuquoc.jpg';
 
 export default {
   name: 'BlogCard',
@@ -55,6 +47,22 @@ export default {
     IcArrow,
     IcDelete,
     RouterLink,
+  },
+  setup() {
+    const store = useStore();
+    const editMode = computed({
+      get() {
+        return store.state.editMode;
+      },
+      set(value) {
+        console.log('value', value);
+        // store.commit('toggleEditMode', value);
+      },
+    });
+
+    return {
+      editMode,
+    };
   },
   props: {
     blogPost: {
@@ -69,21 +77,6 @@ export default {
     viewPost() {},
     editBlog() {},
     confirmDelete() {},
-
-    getImage(imageName: string) {
-      const mockImages = [
-        { name: 'coding', value: imgCoding },
-        { name: 'coffee', value: imgCoffee },
-        { name: 'codingnight', value: imgCodingNight },
-        { name: 'photographer', value: imgPhotographer },
-        { name: 'danang', value: imgDaNang },
-        { name: 'nhatrang', value: imgNhaTrang },
-        { name: 'hoian', value: imgHoiAN },
-        { name: 'phuquoc', value: imgPhuQuoc },
-      ];
-      const found = mockImages.find((img) => img.name === imageName);
-      return found ? found.value : imgCoding; // default fallback
-    },
   },
 };
 </script>

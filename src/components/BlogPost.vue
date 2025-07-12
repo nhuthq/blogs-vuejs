@@ -5,8 +5,8 @@
         <h2>
           {{ blogPost.title }}
         </h2>
-        <p v-if="blogPost.welcomeScreen">{{ blogPost.content }}</p>
-        <p v-else class="content-preview">{{ blogPost.content }}</p>
+        <p v-if="blogPost.welcomeScreen">{{ blogPost.htmlContent }}</p>
+        <p v-else class="content-preview">{{ blogPost.htmlContent }}</p>
         <RouterLink
           v-if="blogPost.welcomeScreen"
           v-show="!user"
@@ -22,7 +22,13 @@
     </div>
     <div class="blog-photo">
       <img
-        :src="getImage(blogPost.coverPhoto)"
+        v-if="blogPost.welcomeScreen"
+        :src="getImage(blogPost.coverPhotoURL)"
+        :alt="blogPost.coverPhotoName"
+      />
+      <img
+        v-else
+        :src="blogPost.coverPhotoURL"
         :alt="blogPost.coverPhotoName"
       />
     </div>
@@ -43,6 +49,10 @@ import IcArrow from '@/assets/Icons/arrow-right-light.svg';
 
 export default {
   name: 'BlogPost',
+  components: {
+    IcArrow,
+    RouterLink,
+  },
   props: {
     blogPost: {
       type: Object as () => Blog,
@@ -52,10 +62,7 @@ export default {
       },
     },
   },
-  components: {
-    IcArrow,
-    RouterLink,
-  },
+
   methods: {
     getImage(imageName: string) {
       const mockImages = [
@@ -178,7 +185,7 @@ export default {
       object-position: center;
     }
   }
-  w &:nth-child(even) {
+  &:nth-child(even) {
     .blog-content {
       order: 2;
     }
