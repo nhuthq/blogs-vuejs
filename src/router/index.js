@@ -8,8 +8,9 @@ import Blogs from '@/views/Blogs.vue';
 import Login from '@/views/Login.vue';
 import Profile from '@/views/Profile.vue';
 import Register from '@/views/Register.vue';
-import ForgotPassword from '@/views/ForgotPassword.vue';
+import EditBlog from '@/views/EditBlog.vue';
 import CreateBlog from '@/views/CreateBlog.vue';
+import ForgotPassword from '@/views/ForgotPassword.vue';
 import BlogPostPreview from '@/views/BlogPostPreview.vue';
 
 const routes = [
@@ -93,6 +94,16 @@ const routes = [
     meta: {
       title: 'Blog Preview',
       requiresAuth: true,
+    },
+  },
+  {
+    path: '/blog/edit/:blogId',
+    name: 'EditBlog',
+    component: EditBlog,
+    meta: {
+      title: 'Edit Blog',
+      requiresAuth: true,
+      requiresAdmin: true,
     },
   },
 ];

@@ -1,5 +1,5 @@
 <template>
-  <div class="create-blog-container">
+  <div class="main-container">
     <Loading v-show="loading" />
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
     <Modal
@@ -7,28 +7,28 @@
       v-on:close-modal="closeModal"
       :modalMessage="submitBlogSuccessMessage"
     />
-    <div class="contaier">
+    <div class="content-container container">
       <div :class="{ invisible: !error }" class="error-message">
         <p><span>Error: </span>{{ this.errorMessage }}</p>
       </div>
-      <div class="blog-info">
+      <div class="blog-info-container">
         <input
           type="text"
           placeholder="Enter blog title"
           v-model="this.blogTitle"
         />
         <div class="upload-file">
-          <label for="blog-photo">Upload Cover Photo</label>
+          <label for="blog-cover-photo">Upload Cover Photo</label>
           <input
             type="file"
-            id="blog-photo"
-            ref="blogPhoto"
+            id="blog-cover-photo"
+            ref="blogCoverPhoto"
             @change="fileChange"
             accept=".png, .jpg, ,jpeg"
           />
           <button
             class="preview"
-            @click="openPreviewCoverPhoto"
+            @click="previewCoverPhoto"
             :disabled="!this.$store.state.blogCoverPhotoURL"
             :class="{ 'inactive-button': !this.$store.state.blogCoverPhotoURL }"
           >
@@ -37,7 +37,7 @@
           <span>File Chosen: {{ this.$store.state.blogCoverPhotoName }}</span>
         </div>
       </div>
-      <div class="blog-editor">
+      <div class="editor-container">
         <QuillEditor
           toolbar="full"
           :modules="modules"
@@ -46,12 +46,12 @@
           placeholder="Write your blog content here..."
         />
       </div>
-      <div class="blog-actions">
+      <div class="actions-container">
         <button
-          @click="submitBlog"
+          @click="submitChanges"
           :class="{ 'inactive-button': !isAdmin || !isAvailableToCreate }"
         >
-          Submit Blog
+          Submit Changes
         </button>
         <button
           @click="previewBlog"
@@ -71,21 +71,23 @@ import {
   setDoc,
   uploadBytes,
   firestoreDB,
+  deleteObject,
   getDownloadURL,
   firebaseStorage,
+  updateDoc,
 } from '@/services/firebase/firebaseInit';
 import { QuillEditor } from '@vueup/vue-quill';
 
 import Modal from '@/components/Modal.vue';
-import ImageResize from 'quill-image-resize';
+
 import Loading from '@/components/Loading.vue';
-import ImageCompress from 'quill-image-compress';
 import BlogCoverPreview from '@/components/BlogCoverPreview.vue';
 
+import ImageResize from 'quill-image-resize';
+import ImageCompress from 'quill-image-compress';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
-
 export default {
-  name: 'CreateBlog',
+  name: 'EditBlog',
   components: {
     Modal,
     Loading,
@@ -97,13 +99,17 @@ export default {
       error: false,
       loading: false,
       modalActive: false,
+
+      routeID: null,
+      currentBlog: null,
       coverPhotoFile: null,
+
       errorMessage: '',
-      submitBlogSuccessMessage: 'Blog has been successfully created',
+      submitBlogSuccessMessage: 'Blog has been successfully edited!',
     };
   },
-  setup: () => {
-    const modules = [
+  setup() {
+    const editorModules = [
       {
         namespace: 'imageResize',
         module: ImageResize,
@@ -136,7 +142,15 @@ export default {
         },
       },
     ];
-    return { modules };
+    return { editorModules };
+  },
+  async mounted() {
+    //: MARK - GET CURRENT BLOG ID
+    this.routeID = this.$route.params.blogId;
+    this.currentBlog = await this.$store.state.blogPosts.filter((blog) => {
+      return blog.id === this.routeID;
+    });
+    this.$store.commit('setBlogState', this.currentBlog[0]);
   },
   computed: {
     isAdmin() {
@@ -154,14 +168,6 @@ export default {
         );
       },
     },
-    blogCoverPhotoURL: {
-      get() {
-        return this.$store.state.blogCoverPhotoURL;
-      },
-      set(payload) {
-        this.$store.commit('updateBlogCoverPhotoURL', payload);
-      },
-    },
     blogTitle: {
       get() {
         return this.$store.state.blogTitle;
@@ -170,20 +176,28 @@ export default {
         this.$store.commit('updateBlogTitle', payload);
       },
     },
-    blogCoverPhotoName: {
-      get() {
-        return this.$store.state.blogCoverPhotoName;
-      },
-      set(payload) {
-        this.$store.commit('updateBlogCoverPhotoName', payload);
-      },
-    },
     blogHTMLContent: {
       get() {
         return this.$store.state.blogHTMLContent;
       },
       set(payload) {
         this.$store.commit('updateBlogHTMLContent', payload);
+      },
+    },
+    blogCoverPhotoURL: {
+      get() {
+        return this.$store.state.blogCoverPhotoURL;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogCoverPhotoURL', payload);
+      },
+    },
+    blogCoverPhotoName: {
+      get() {
+        return this.$store.state.blogCoverPhotoName;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogCoverPhotoName', payload);
       },
     },
   },
@@ -200,20 +214,19 @@ export default {
       this.$store.commit('updateBlogCoverPhotoURL', fileURL);
       this.$store.commit('updateBlogCoverPhotoName', fileName);
     },
-
     clearForm() {
       this.blogTitle = '';
       this.blogHTMLContent = '<p></p>';
-      this.blogCoverPhotoName = '';
       this.blogCoverPhotoURL = null;
-    },
-    openPreviewCoverPhoto() {
-      this.$store.commit('updateBlogPhotoPreview', true);
+      this.blogCoverPhotoName = '';
     },
     previewBlog() {
       this.$router.push({ name: 'BlogPreview' });
     },
-    async submitBlog() {
+    previewCoverPhoto() {
+      this.$store.commit('updateBlogPhotoPreview', true);
+    },
+    async submitChanges() {
       if (!this.isAvailableToCreate) {
         this.error = true;
         this.errorMessage =
@@ -224,68 +237,81 @@ export default {
       this.loading = true;
       this.error = false;
       this.errorMessage = '';
+      const editedTime = Date.now();
 
-      const blogID =
-        new Date().getTime().toString(36) + new Date().getUTCMilliseconds();
-      const coverPhotoName = `${blogID}${this.blogCoverPhotoName}`;
+      // Get previous cover name
+      const previousCoverPhotoName = this.currentBlog[0].coverPhotoName;
       const coverPhotoRef = ref(
         firebaseStorage,
-        `BlogPostCoverPhotos/${coverPhotoName}`
+        `BlogPostCoverPhotos/${this.routeID}${previousCoverPhotoName}`
       );
-      uploadBytes(coverPhotoRef, this.coverPhotoFile).then(async () => {
-        try {
-          const downloadURL = await getDownloadURL(ref(coverPhotoRef)).catch(
-            (error) => {
+
+      // Delete previous cover
+      await deleteObject(coverPhotoRef)
+        .then((response) => {
+          console.log(
+            'FireStore file deleted: ',
+            JSON.stringify(response, null, 2)
+          );
+
+          // Upload new cover photo
+          uploadBytes(coverPhotoRef, this.coverPhotoFile).then(async () => {
+            try {
+              const downloadURL = await getDownloadURL(
+                ref(coverPhotoRef)
+              ).catch((error) => {
+                this.error = true;
+                this.loading = false;
+                this.errorMessage = `Error get image download URL: ${error}`;
+                console.error(errorMessage);
+              });
+
+              const timestamp = Date.now();
+              const blogsDocRef = doc(firestoreDB, 'blogs', this.routeID);
+              const blogData = {
+                title: this.blogTitle,
+                shortDescription: '',
+                htmlContent: this.blogHTMLContent,
+                coverPhotoURL: downloadURL,
+                coverPhotoName: this.blogCoverPhotoName,
+                authorID: this.profileId,
+                isPublished: false,
+                lastEditedDate: timestamp,
+              };
+
+              await updateDoc(blogsDocRef, blogData).then(async (response) => {
+                this.clearForm();
+                await this.$store.dispatch('updateBlog');
+                console.log(
+                  'Blog submitted successfully',
+                  JSON.stringify(response, null, 2)
+                );
+                setTimeout(() => {
+                  this.loading = false;
+                  this.modalActive = true;
+                }, 2000);
+              });
+            } catch (error) {
               this.error = true;
               this.loading = false;
-              this.errorMessage = error;
-              console.error('Error get image download URL: ', error);
+              this.errorMessage = `Error whilte submitting Blog: ${error.message}`;
+              console.error(this.errorMessage);
             }
-          );
-
-          const timestamp = Date.now();
-          const blogsDocRef = doc(firestoreDB, 'blogs', blogID);
-          const blogData = {
-            id: blogID,
-            title: this.blogTitle,
-            shortDescription: '',
-            htmlContent: this.blogHTMLContent,
-            coverPhotoURL: downloadURL,
-            coverPhotoName: this.blogCoverPhotoName,
-            authorID: this.profileId,
-            isPublished: false,
-            createdDate: timestamp,
-            lastEditedDate: timestamp,
-          };
-
-          await setDoc(blogsDocRef, blogData, { merge: true }).then(
-            async (response) => {
-              this.clearForm();
-              await this.$store.dispatch('getPosts');
-              console.log(
-                'Blog submitted successfully',
-                JSON.stringify(response, null, 2)
-              );
-              setTimeout(() => {
-                this.loading = false;
-                this.modalActive = true;
-              }, 2000);
-            }
-          );
-        } catch (error) {
+          });
+        })
+        .catch((error) => {
           this.error = true;
           this.loading = false;
-          this.errorMessage = `Error whilte submitting Blog: ${error.message}`;
+          this.errorMessage = `Error occurred while deleting previous cover photo: ${error.message}`;
           console.error(this.errorMessage);
-        }
-      });
+        });
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.create-blog-container {
+.main-container {
   position: relative;
   height: 100%;
 
@@ -293,29 +319,23 @@ export default {
     margin-top: 0;
   }
 
-  .router-button {
-    text-decoration: none;
-    color: white;
-  }
-
-  .contaier {
+  .content-container {
     position: relative;
     height: 100%;
     padding: 10px 25px 60px;
   }
 
   label,
-  button,
-  .router-button {
+  button {
     cursor: pointer;
-    transition: 0.5s ease-in-out all;
     align-self: center;
+    padding: 12px 24px;
     font-size: 14px;
     border-radius: 20px;
-    padding: 12px 24px;
-    color: white;
     text-decoration: none;
+    color: white;
     background-color: #303030;
+    transition: 0.5s ease-in-out all;
 
     &:hover {
       background-color: rgba(48, 48, 48, 0.7);
@@ -327,13 +347,13 @@ export default {
   }
 
   .error-message {
-    widows: 100%;
+    width: 100%;
     padding: 12px;
+    margin-bottom: 10px;
     border-radius: 8px;
     color: white;
-    margin-bottom: 10px;
-    opacity: 1;
     background-color: #303030;
+    opacity: 1;
     transition: 0.5s ease all;
 
     p {
@@ -345,19 +365,19 @@ export default {
     }
   }
 
-  .blog-info {
+  .blog-info-container {
     display: flex;
     margin-bottom: 32px;
 
-    input:nth-chil(1) {
+    input:nth-child(1) {
       min-width: 300px;
     }
 
     input {
-      transition: 0.5s ease-in-out all;
       padding: 10px 4px;
       border: none;
       border-bottom: 1px solid #303030;
+      transition: 0.5s ease-in-out all;
 
       &:focus {
         outline: none;
@@ -366,10 +386,10 @@ export default {
     }
 
     .upload-file {
+      display: flex;
+      position: relative;
       flex: 1;
       margin-left: 16px;
-      position: relative;
-      display: flex;
 
       input {
         display: none;
@@ -385,17 +405,6 @@ export default {
         margin-left: 16px;
         align-content: center;
       }
-
-      .clear-file {
-        margin-left: 16px;
-        background-color: #ff6b6b;
-        font-size: 12px;
-        padding: 8px 16px;
-
-        &:hover {
-          background-color: rgba(255, 107, 107, 0.7);
-        }
-      }
     }
   }
 
@@ -404,12 +413,12 @@ export default {
     background-color: gray;
   }
 
-  .blog-editor {
+  .editor-container {
     height: 60vh;
     overflow: auto;
   }
 
-  .blog-actions {
+  .actions-container {
     margin-top: 32px;
 
     button {

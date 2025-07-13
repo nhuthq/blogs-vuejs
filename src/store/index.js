@@ -27,9 +27,8 @@ export const store = createStore({
     blogTitle: '',
     blogHTMLContent: '',
     blogCoverPhotoName: '',
-
-    blogPhotoPreview: false,
     blogCoverPhotoURL: null,
+    blogPhotoPreview: false,
   },
   getters: {
     featureBlogs(state) {
@@ -59,6 +58,12 @@ export const store = createStore({
         state.profileFirstName.match(/(\b\S)?/g).join('') +
         state.profileLastName.match(/(\b\S)?/g).join('');
     },
+    setBlogState(state, payload) {
+      state.blogTitle = payload.title;
+      state.blogHTMLContent = payload.htmlContent;
+      state.blogCoverPhotoURL = payload.coverPhotoURL;
+      state.blogCoverPhotoName = payload.coverPhotoName;
+    },
     changeEmail(state, payload) {
       state.profileEmail = payload;
     },
@@ -85,6 +90,11 @@ export const store = createStore({
     },
     updateBlogCoverPhotoName(state, payload) {
       state.blogCoverPhotoName = payload;
+    },
+    filterBlog(state, payload) {
+      state.blogPosts = state.blogPosts.filter(
+        (post) => post.blogId !== payload
+      );
     },
   },
   actions: {
@@ -126,6 +136,10 @@ export const store = createStore({
         }
       });
       state.blogsFetched = true;
+    },
+    async updateBlog({ commit, dispatch }, payload) {
+      commit('filterBlog', payload);
+      await dispatch('getBlogs');
     },
   },
 

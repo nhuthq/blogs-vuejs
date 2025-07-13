@@ -60,6 +60,7 @@ export {
   updateDoc,
   collection,
   uploadBytes,
+  deleteObject,
   firebaseApp,
   firestoreDB,
   firebaseAuth,

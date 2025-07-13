@@ -55,8 +55,7 @@ export default {
         return store.state.editMode;
       },
       set(value) {
-        console.log('value', value);
-        // store.commit('toggleEditMode', value);
+        store.commit('toggleEditMode', value);
       },
     });
 
@@ -75,7 +74,12 @@ export default {
   },
   methods: {
     viewPost() {},
-    editBlog() {},
+    editBlog() {
+      this.$router.push({
+        name: 'EditBlog',
+        params: { blogId: this.blogPost.id },
+      });
+    },
     confirmDelete() {},
   },
 };

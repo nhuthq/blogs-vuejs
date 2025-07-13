@@ -10,5 +10,5 @@ export interface Blog {
   createdDate: string;
   lastEditedDate: string;
   authorID: String;
-  welcomeScreen: boolean | false;
+  welcomePost: boolean | false;
 }
