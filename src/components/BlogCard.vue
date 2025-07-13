@@ -1,5 +1,11 @@
 <template>
   <div class="blog-card-container">
+    <ConfirmDialog
+      :modalMessage="deleteConfirmMessage"
+      v-if="confirmDeleteModal"
+      v-on:confirm="deletePost"
+      v-on:closeModal="closeModal"
+    />
     <div v-if="editMode" class="icons">
       <div class="icon" @click="editBlog">
         <IcEdit class="edit" />
@@ -36,6 +42,7 @@ import { useStore } from 'vuex';
 import { Blog } from '../models/Blog';
 import { RouterLink } from 'vue-router';
 
+import ConfirmDialog from './ConfirmDialog.vue';
 import IcEdit from '@/assets/Icons/edit-regular.svg';
 import IcDelete from '@/assets/Icons/trash-regular.svg';
 import IcArrow from '@/assets/Icons/arrow-right-light.svg';
@@ -47,6 +54,14 @@ export default {
     IcArrow,
     IcDelete,
     RouterLink,
+    ConfirmDialog,
+  },
+  data() {
+    return {
+      confirmDeleteModal: false,
+      errorMessage: '',
+      deleteConfirmMessage: 'Are you sure to delete this blog?',
+    };
   },
   setup() {
     const store = useStore();
@@ -73,6 +88,13 @@ export default {
     },
   },
   methods: {
+    closeModal() {
+      this.confirmDeleteModal = !this.confirmDeleteModal;
+    },
+    deletePost() {
+      this.$store.dispatch('deletePost', this.blogPost.id);
+      this.confirmDeleteModal = !this.confirmDeleteModal;
+    },
     viewPost() {},
     editBlog() {
       this.$router.push({
@@ -80,7 +102,9 @@ export default {
         params: { blogId: this.blogPost.id },
       });
     },
-    confirmDelete() {},
+    confirmDelete() {
+      this.confirmDeleteModal = true;
+    },
   },
 };
 </script>

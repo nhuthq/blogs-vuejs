@@ -141,6 +141,11 @@ export const store = createStore({
       commit('filterBlog', payload);
       await dispatch('getBlogs');
     },
+    async deletePost({ commit }, payload) {
+      await deleteDoc(doc(firestoreDB, 'blogs', payload)).then(() => {
+        commit('filterBlog', payload);
+      });
+    },
   },
 
   modules: {},
