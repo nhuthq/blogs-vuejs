@@ -1,8 +1,8 @@
 <template>
   <div>
-    <BlogPost :blogPost="welcomePost" />
-    <BlogPost
-      :blogPost="item"
+    <BlogFeature :blog="welcomePost" />
+    <BlogFeature
+      :blog="item"
       v-for="(item, index) in featureBlogs"
       :key="index"
     />
@@ -30,16 +30,16 @@
 </template>
 
 <script>
-import BlogPost from '@/components/BlogPost.vue';
 import BlogCard from '@/components/BlogCard.vue';
+import BlogFeature from '@/components/BlogFeature.vue';
 import IcArrow from '@/assets/Icons/arrow-right-light.svg';
 
 export default {
   name: 'Home',
   components: {
     IcArrow,
-    BlogPost,
     BlogCard,
+    BlogFeature,
   },
   data() {
     return {

@@ -1,6 +1,6 @@
 <template>
-  <div class="cover-preview-container" ref="preview-modal">
-    <div class="preview-content">
+  <div class="main-container" ref="preview-modal">
+    <div class="content-container">
       <CloseIcon @click="closePreview" class="icon" />
       <img :src="this.blogCoverPhoto" alt="Cover Photo" />
     </div>
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cover-preview-container {
+.main-container {
   top: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 99;
@@ -39,13 +39,14 @@ export default {
   width: 100%;
   height: 100%;
 
-  .preview-content {
+  .content-container {
     display: flex;
     position: relative;
     justify-content: center;
-    width: 600px;
-    height: 400px;
-    padding: 50px;
+    width: 80%;
+    height: auto;
+    max-width: 600px;
+    padding: 30px 20px 20px 20px;
     border-radius: 12px;
     background-color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -67,6 +68,8 @@ export default {
       display: block;
       width: auto;
       height: 100%;
+      width: 100%;
+      border-radius: 12px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
         0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }

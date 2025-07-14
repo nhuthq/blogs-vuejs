@@ -30,12 +30,15 @@
               >
             </li>
             <li>
-              <RouterLink :to="{ name: 'CreateBlog' }" class="link"
+              <RouterLink
+                v-if="isAdmin"
+                :to="{ name: 'CreateBlog' }"
+                class="link"
                 >Create Blogs</RouterLink
               >
             </li>
             <li>
-              <RouterLink :to="{ name: 'Login' }" class="link"
+              <RouterLink v-if="!user" :to="{ name: 'Login' }" class="link"
                 >Login</RouterLink
               >
             </li>
@@ -62,6 +65,14 @@ export default {
     twitter,
     linkedin,
     instagram,
+  },
+  computed: {
+    isAdmin() {
+      return this.$store.state.profileAdmin;
+    },
+    user() {
+      return this.$store.state.user;
+    },
   },
 };
 </script>

@@ -24,7 +24,7 @@
           ref="profile"
         >
           <span>{{ this.$store.state.profileInitials }}</span>
-          <div v-show="toggleProfile">
+          <div v-show="toggleProfile" class="profile-panel">
             <ProfilePanel />
           </div>
         </div>
@@ -37,14 +37,17 @@
       v-show="isOpenSPNav"
     >
       <ul class="mobile-nav">
-        <RouterLink class="link" :to="{ name: 'Home' }">Home</RouterLink>
-        <RouterLink class="link" :to="{ name: 'Blogs' }">Blogs</RouterLink>
-        <RouterLink v-show="isAdmin" class="link" :to="{ name: 'CreateBlog' }"
-          >Create Blogs</RouterLink
-        >
-        <RouterLink v-show="!user" class="link" :to="{ name: 'Login' }"
-          >Login</RouterLink
-        >
+        <ProfilePanel />
+        <div class="options">
+          <RouterLink class="link" :to="{ name: 'Home' }">Home</RouterLink>
+          <RouterLink class="link" :to="{ name: 'Blogs' }">Blogs</RouterLink>
+          <RouterLink v-show="isAdmin" class="link" :to="{ name: 'CreateBlog' }"
+            >Create Blogs</RouterLink
+          >
+          <RouterLink v-show="!user" class="link" :to="{ name: 'Login' }"
+            >Login</RouterLink
+          >
+        </div>
       </ul>
     </Transition>
   </header>
@@ -160,6 +163,14 @@ header {
       justify-content: flex-end;
       width: 100%;
 
+      .profile-panel {
+        position: absolute;
+        top: 65px;
+        right: 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
       ul {
         margin-right: 32px;
 
@@ -215,6 +226,13 @@ header {
     background-color: #303030;
     transform: translateX(-100%);
     animation: slideIn 0.3s ease forwards;
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      border-top: 1px solid white;
+    }
 
     .link {
       padding: 15px 0;

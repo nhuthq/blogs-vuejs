@@ -1,108 +1,93 @@
 <template>
-  <div class="blog-post-container" :class="{ 'no-user': !user }">
-    <div class="blog-content">
+  <div class="main-container" :class="{ 'no-user': !user }">
+    <div class="content-container">
       <div>
         <h2>
-          {{ blogPost.title }}
+          {{ blog.title }}
         </h2>
-        <p v-if="blogPost.welcomeScreen">{{ blogPost.htmlContent }}</p>
-        <p v-else class="content-preview">{{ blogPost.htmlContent }}</p>
+        <p v-if="blog.welcomeScreen">{{ blog.htmlContent }}</p>
+        <p v-else class="html-content" v-html="blog.htmlContent"></p>
         <RouterLink
-          v-if="blogPost.welcomeScreen"
+          v-if="blog.welcomeScreen"
           v-show="!user"
-          class="link link-light"
-          to="/login"
+          class="link"
+          :to="{ name: 'Login' }"
         >
-          Login/register <IcArrow class="arrow arrow-light" />
+          Login/register <IcArrow class="arrow" />
         </RouterLink>
-        <RounterLink v-else class="link" to="#">
+        <RouterLink
+          v-else
+          class="link"
+          :to="{ name: 'BlogDetails', params: { blogId: this.blog.id } }"
+        >
           View The Post <IcArrow class="arrow" />
-        </RounterLink>
+        </RouterLink>
       </div>
     </div>
     <div class="blog-photo">
       <img
-        v-if="blogPost.welcomeScreen"
-        :src="getImage(blogPost.coverPhotoURL)"
-        :alt="blogPost.coverPhotoName"
+        v-if="blog.welcomeScreen"
+        :src="getImage(blog.coverPhotoURL)"
+        :alt="blog.coverPhotoName"
       />
-      <img
-        v-else
-        :src="blogPost.coverPhotoURL"
-        :alt="blogPost.coverPhotoName"
-      />
+      <img v-else :src="blog.coverPhotoURL" :alt="blog.coverPhotoName" />
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { computed } from 'vue';
 import { useStore } from 'vuex';
-import { Blog } from '../models/Blog';
 import { RouterLink } from 'vue-router';
-import imgCoffee from '@/assets/thumbnail/coffee.jpg';
-import imgCoding from '@/assets/thumbnail/coding.jpg';
-import imgCodingNight from '@/assets/thumbnail/codingnight.jpg';
-import imgPhotographer from '@/assets/thumbnail/photographer.jpg';
 
+import imgCoding from '@/assets/thumbnail/coding.jpg';
 import IcArrow from '@/assets/Icons/arrow-right-light.svg';
 
 export default {
   name: 'BlogPost',
+  props: ['blog'],
   components: {
     IcArrow,
     RouterLink,
   },
-  props: {
-    blogPost: {
-      type: Object as () => Blog,
-      required: true,
-      validator: (obj: Blog) => {
-        return typeof obj.id === 'string' && typeof obj.title === 'string';
-      },
-    },
-  },
-
   methods: {
-    getImage(imageName: string) {
-      const mockImages = [
-        { name: 'coding', value: imgCoding },
-        { name: 'coffee', value: imgCoffee },
-        { name: 'codingnight', value: imgCodingNight },
-        { name: 'photographer', value: imgPhotographer },
-      ];
+    // viewBlog() {
+    //   console.log(this.blog.id);
+    //   this.$router.push({
+    //     name: 'BlogDetails',
+    //     params: { blogId: this.blog.id },
+    //   });
+    // },
+    getImage(imageName) {
+      const mockImages = [{ name: 'coding', value: imgCoding }];
       const found = mockImages.find((img) => img.name === imageName);
       return found ? found.value : imgCoding; // default fallback
     },
   },
-  setup() {
-    const store = useStore();
-
-    const user = computed(() => store.state.user);
-
-    return {
-      user,
-    };
+  computed: {
+    user() {
+      return this.$store.state.user;
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.blog-post-container {
+.main-container {
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   @media (min-width: 700px) {
     min-height: 650px;
-    max-height: 650px;
     flex-direction: row;
   }
-  .blog-content {
+  .content-container {
     display: flex;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+
     flex: 4;
     order: 2;
     @media (min-width: 700px) {
@@ -115,8 +100,9 @@ export default {
     div {
       max-width: 375px;
       padding: 72px 24px;
-      @media (min-width: 700px) {
-        padding: 0 24px;
+
+      @media (min-width: 1440px) {
+        max-width: 575px;
       }
 
       h2 {
@@ -135,7 +121,7 @@ export default {
         line-height: 1.5;
       }
 
-      .content-preview {
+      .html-content {
         font-size: 13px;
         max-height: 24px;
         width: 250px;
@@ -149,7 +135,9 @@ export default {
         align-items: center;
         margin-top: 32px;
         padding-bottom: 4px;
+        color: #303030;
         border-bottom: 1px solid transparent;
+        transition: 0.5s ease all;
 
         &:hover {
           border-bottom-color: #303030;

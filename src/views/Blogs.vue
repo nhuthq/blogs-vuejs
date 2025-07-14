@@ -1,11 +1,13 @@
 <template>
-  <div class="blog-cards-container container">
-    <div v-show="isAdmin" class="toggle-edit">
-      <span>Toggle Editing Mode</span>
-      <input type="checkbox" v-model="editMode" />
-    </div>
-    <div class="blog-cards-grid">
-      <BlogCard :blogPost="item" v-for="(item, index) in blogs" :key="index" />
+  <div class="main-container">
+    <div class="content-container container">
+      <div v-show="isAdmin" class="toggle-edit">
+        <span>Toggle Editing Mode</span>
+        <input type="checkbox" v-model="editMode" />
+      </div>
+      <div class="blog-cards-grid">
+        <BlogCard :blog="item" v-for="(item, index) in blogs" :key="index" />
+      </div>
     </div>
   </div>
 </template>
@@ -41,13 +43,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.blog-cards-container {
-  display: flex;
-  flex-direction: column;
-  padding: 80px 16px;
+.main-container {
+  height: 100%;
+  width: 100%;
   background-color: #f1f1f1;
-  @media (min-width: 500px) {
-    padding: 100px 16px;
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    padding: 80px 25px;
+    @media (min-width: 1440px) {
+      padding: 80px 0px;
+    }
   }
 
   .blog-cards-grid {
@@ -55,7 +62,6 @@ export default {
     gap: 32px;
     grid-template-columns: 1fr;
     margin-top: 70px;
-
     @media (min-width: 500px) {
       grid-template-columns: repeat(2, 1fr);
     }

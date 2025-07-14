@@ -11,4 +11,5 @@ export interface Blog {
   lastEditedDate: string;
   authorID: String;
   welcomePost: boolean | false;
+  isHighlighted: boolean | false;
 }

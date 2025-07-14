@@ -15,7 +15,7 @@
         :src="this.currentBlog[0].coverPhotoURL"
         :alt="this.currentBlog[0].coverPhotoName"
       />
-      <div class="html-content">CONTENT</div>
+      <div class="html-content" v-html="this.currentBlog[0].htmlContent"></div>
       <h4>
         Last edited on:
         {{
@@ -39,6 +39,7 @@ export default {
       errorMessage: '',
     };
   },
+
   async mounted() {
     try {
       this.currentBlog = this.$store.state.blogPosts.filter((blog) => {

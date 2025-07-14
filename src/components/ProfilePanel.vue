@@ -67,13 +67,9 @@ export default {
 
 <style lang="scss" scoped>
 .profile-panel-container {
-  position: absolute;
-  top: 65px;
-  right: 0;
+  position: relative;
   max-width: 280px;
   background-color: #303030;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   .close {
     position: absolute;
@@ -86,6 +82,7 @@ export default {
     display: flex;
     align-items: center;
     padding: 15px;
+    color: white;
     border-bottom: 1px solid white;
 
     .initials {

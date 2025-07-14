@@ -1,5 +1,5 @@
 <template>
-  <div class="blog-card-container">
+  <div class="main-container">
     <ConfirmDialog
       :modalMessage="deleteConfirmMessage"
       v-if="confirmDeleteModal"
@@ -15,16 +15,16 @@
       </div>
     </div>
     <img
-      :src="blogPost.coverPhotoURL"
-      :alt="blogPost.coverPhotoName"
+      :src="blog.coverPhotoURL"
+      :alt="blog.coverPhotoName"
       @click="viewBlog"
     />
-    <div class="info">
-      <h4>{{ blogPost.title }}</h4>
+    <div class="content-container">
+      <h4>{{ blog.title }}</h4>
       <h6>
         Posted on:
         {{
-          new Date(blogPost.createdDate).toLocaleString('en-us', {
+          new Date(blog.createdDate).toLocaleString('en-us', {
             dateStyle: 'long',
           })
         }}
@@ -36,10 +36,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { computed } from 'vue';
 import { useStore } from 'vuex';
-import { Blog } from '../models/Blog';
 import { RouterLink } from 'vue-router';
 
 import ConfirmDialog from './ConfirmDialog.vue';
@@ -49,6 +48,7 @@ import IcArrow from '@/assets/Icons/arrow-right-light.svg';
 
 export default {
   name: 'BlogCard',
+  props: ['blog'],
   components: {
     IcEdit,
     IcArrow,
@@ -78,33 +78,25 @@ export default {
       editMode,
     };
   },
-  props: {
-    blogPost: {
-      type: Object as () => Blog,
-      required: true,
-      validator: (obj: Blog) => {
-        return typeof obj.id === 'string' && typeof obj.title === 'string';
-      },
-    },
-  },
+
   methods: {
     viewBlog() {
       this.$router.push({
         name: 'BlogDetails',
-        params: { blogId: this.blogPost.id },
+        params: { blogId: this.blog.id },
       });
     },
     closeModal() {
       this.confirmDeleteModal = !this.confirmDeleteModal;
     },
     deletePost() {
-      this.$store.dispatch('deletePost', this.blogPost.id);
+      this.$store.dispatch('deletePost', this.blog.id);
       this.confirmDeleteModal = !this.confirmDeleteModal;
     },
     editBlog() {
       this.$router.push({
         name: 'EditBlog',
-        params: { blogId: this.blogPost.id },
+        params: { blogId: this.blog.id },
       });
     },
     confirmDelete() {
@@ -115,7 +107,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.blog-card-container {
+.main-container {
   color: white;
   display: flex;
   border-radius: 8px;
@@ -123,7 +115,6 @@ export default {
   position: relative;
   flex-direction: column;
   justify-content: center;
-  background-color: white;
   transition: all 0.5s ease-in-out;
 
   &:hover {
@@ -172,6 +163,7 @@ export default {
   }
 
   img {
+    cursor: pointer;
     display: block;
     border-radius: 8px 8px 0 0;
     z-index: 1;
@@ -180,13 +172,15 @@ export default {
     object-fit: cover;
   }
 
-  .info {
+  .content-container {
     display: flex;
     flex-direction: column;
     height: 100%;
     z-index: 3;
     padding: 32px 16px;
     color: black;
+    background-color: white;
+    border-radius: 0 0 8px 8px;
 
     h4 {
       padding-bottom: 8px;

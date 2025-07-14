@@ -18,11 +18,11 @@
           v-model="this.blogTitle"
         />
         <div class="upload-file-container">
-          <label for="blog-cover-photo">Upload Cover Photo</label>
+          <label for="blog-photo">Upload Cover Photo</label>
           <input
             type="file"
-            id="blog-cover-photo"
-            ref="blogCoverPhoto"
+            id="blog-photo"
+            ref="blogPhoto"
             @change="fileChange"
             accept=".png, .jpg, ,jpeg"
           />
@@ -211,6 +211,7 @@ export default {
       this.coverPhotoFile = this.$refs.blogPhoto.files[0];
       const fileName = this.coverPhotoFile.name;
       const fileURL = URL.createObjectURL(this.coverPhotoFile);
+      console.log('HERE: ', this.coverPhotoFile);
 
       this.$store.commit('updateBlogCoverPhotoURL', fileURL);
       this.$store.commit('updateBlogCoverPhotoName', fileName);
