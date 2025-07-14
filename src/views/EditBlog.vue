@@ -11,13 +11,13 @@
       <div :class="{ invisible: !error }" class="error-message">
         <p><span>Error: </span>{{ this.errorMessage }}</p>
       </div>
-      <div class="blog-info-container">
+      <div class="blog-title-container">
         <input
           type="text"
           placeholder="Enter blog title"
           v-model="this.blogTitle"
         />
-        <div class="upload-file">
+        <div class="upload-file-container">
           <label for="blog-cover-photo">Upload Cover Photo</label>
           <input
             type="file"
@@ -27,10 +27,12 @@
             accept=".png, .jpg, ,jpeg"
           />
           <button
-            class="preview"
+            class="btn-preview"
             @click="previewCoverPhoto"
             :disabled="!this.$store.state.blogCoverPhotoURL"
-            :class="{ 'inactive-button': !this.$store.state.blogCoverPhotoURL }"
+            :class="{
+              'inactive-button': !this.$store.state.blogCoverPhotoURL,
+            }"
           >
             Preview Photo
           </button>
@@ -68,24 +70,23 @@
 import {
   ref,
   doc,
-  setDoc,
+  updateDoc,
   uploadBytes,
   firestoreDB,
   deleteObject,
   getDownloadURL,
   firebaseStorage,
-  updateDoc,
 } from '@/services/firebase/firebaseInit';
 import { QuillEditor } from '@vueup/vue-quill';
 
 import Modal from '@/components/Modal.vue';
-
 import Loading from '@/components/Loading.vue';
 import BlogCoverPreview from '@/components/BlogCoverPreview.vue';
 
 import ImageResize from 'quill-image-resize';
 import ImageCompress from 'quill-image-compress';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
 export default {
   name: 'EditBlog',
   components: {
@@ -312,17 +313,22 @@ export default {
 
 <style lang="scss" scoped>
 .main-container {
-  position: relative;
   height: 100%;
+  width: 100%;
 
   button {
     margin-top: 0;
   }
 
   .content-container {
-    position: relative;
-    height: 100%;
-    padding: 10px 25px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    padding: 0 25px;
+    @media (min-width: 1440px) {
+      padding: 0;
+    }
   }
 
   label,
@@ -365,9 +371,13 @@ export default {
     }
   }
 
-  .blog-info-container {
+  .blog-title-container {
     display: flex;
+    flex-direction: column;
     margin-bottom: 32px;
+    @media (min-width: 1440px) {
+      flex-direction: row;
+    }
 
     input:nth-child(1) {
       min-width: 300px;
@@ -385,25 +395,44 @@ export default {
       }
     }
 
-    .upload-file {
+    .upload-file-container {
       display: flex;
-      position: relative;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
       flex: 1;
-      margin-left: 16px;
+      margin-left: 0;
+      margin-top: 16px;
+
+      @media (min-width: 1440px) {
+        padding: 0;
+        margin-top: 0;
+        margin-left: 16px;
+        flex-direction: row;
+
+        justify-content: flex-start;
+      }
+
+      label {
+        align-self: flex-start;
+      }
 
       input {
         display: none;
       }
 
-      .preview {
-        margin-left: 16px;
+      .btn-preview {
         text-transform: initial;
+        align-self: flex-start;
       }
 
       span {
         font-size: 16px;
-        margin-left: 16px;
-        align-content: center;
+        align-self: flex-start;
+        @media (min-width: 1440px) {
+          align-self: center;
+        }
       }
     }
   }
@@ -415,14 +444,25 @@ export default {
 
   .editor-container {
     height: 60vh;
-    overflow: auto;
+    overflow: scroll;
   }
 
   .actions-container {
-    margin-top: 32px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (min-width: 1440px) {
+      justify-content: flex-start;
+    }
 
     button {
-      margin-right: 16px;
+      margin: 32px 0;
+      @media (min-width: 1440px) {
+        margin-right: 16px;
+        justify-content: space-between;
+      }
     }
   }
 }

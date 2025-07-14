@@ -10,6 +10,7 @@ import Profile from '@/views/Profile.vue';
 import Register from '@/views/Register.vue';
 import EditBlog from '@/views/EditBlog.vue';
 import CreateBlog from '@/views/CreateBlog.vue';
+import BlogDetails from '@/views/BlogDetails.vue';
 import ForgotPassword from '@/views/ForgotPassword.vue';
 import BlogPostPreview from '@/views/BlogPostPreview.vue';
 
@@ -94,6 +95,15 @@ const routes = [
     meta: {
       title: 'Blog Preview',
       requiresAuth: true,
+    },
+  },
+  {
+    path: '/blog/:blogId',
+    name: 'BlogDetails',
+    component: BlogDetails,
+    meta: {
+      title: 'Blog Details',
+      requiresAuth: false,
     },
   },
   {

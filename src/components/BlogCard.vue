@@ -15,9 +15,9 @@
       </div>
     </div>
     <img
-      @click="viewPost"
       :src="blogPost.coverPhotoURL"
       :alt="blogPost.coverPhotoName"
+      @click="viewBlog"
     />
     <div class="info">
       <h4>{{ blogPost.title }}</h4>
@@ -29,7 +29,7 @@
           })
         }}
       </h6>
-      <RounterLink class="link"
+      <RounterLink class="link" @click="viewBlog"
         >View The Pose <IcArrow class="arrow"
       /></RounterLink>
     </div>
@@ -88,6 +88,12 @@ export default {
     },
   },
   methods: {
+    viewBlog() {
+      this.$router.push({
+        name: 'BlogDetails',
+        params: { blogId: this.blogPost.id },
+      });
+    },
     closeModal() {
       this.confirmDeleteModal = !this.confirmDeleteModal;
     },
@@ -95,7 +101,6 @@ export default {
       this.$store.dispatch('deletePost', this.blogPost.id);
       this.confirmDeleteModal = !this.confirmDeleteModal;
     },
-    viewPost() {},
     editBlog() {
       this.$router.push({
         name: 'EditBlog',
